@@ -1,0 +1,94 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Andres Castellon\\source\\repos\\LabRelacion\\Relaciones\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{F57218BE-3B85-FB0E-58C1-A04A2D329F0B}|Main\\Main.csproj|c:\\users\\andres castellon\\source\\repos\\labrelacion\\relaciones\\main\\form1.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F57218BE-3B85-FB0E-58C1-A04A2D329F0B}|Main\\Main.csproj|solutionrelative:main\\form1.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F57218BE-3B85-FB0E-58C1-A04A2D329F0B}|Main\\Main.csproj|C:\\Users\\Andres Castellon\\source\\repos\\LabRelacion\\Relaciones\\main\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{F57218BE-3B85-FB0E-58C1-A04A2D329F0B}|Main\\Main.csproj|solutionrelative:main\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F57218BE-3B85-FB0E-58C1-A04A2D329F0B}|Main\\Main.csproj|c:\\users\\andres castellon\\source\\repos\\labrelacion\\relaciones\\main\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F57218BE-3B85-FB0E-58C1-A04A2D329F0B}|Main\\Main.csproj|solutionrelative:main\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 6,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{eefa5220-e298-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{c6f34f0d-7ae5-4f3a-be61-fe0c21ae9eb8}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Form1.Designer.cs",
+              "DocumentMoniker": "C:\\Users\\Andres Castellon\\source\\repos\\LabRelacion\\Relaciones\\Main\\Form1.Designer.cs",
+              "RelativeDocumentMoniker": "Main\\Form1.Designer.cs",
+              "ToolTip": "C:\\Users\\Andres Castellon\\source\\repos\\LabRelacion\\Relaciones\\Main\\Form1.Designer.cs",
+              "RelativeToolTip": "Main\\Form1.Designer.cs",
+              "ViewState": "AgIAAOICAAAAAAAAAAAYwFACAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-14T03:58:08.351Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Form1.cs",
+              "DocumentMoniker": "C:\\Users\\Andres Castellon\\source\\repos\\LabRelacion\\Relaciones\\Main\\Form1.cs",
+              "RelativeDocumentMoniker": "Main\\Form1.cs",
+              "ToolTip": "C:\\Users\\Andres Castellon\\source\\repos\\LabRelacion\\Relaciones\\Main\\Form1.cs",
+              "RelativeToolTip": "Main\\Form1.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAhwBAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-14T01:51:14.817Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Form1.cs [Dise\u00F1o]",
+              "DocumentMoniker": "C:\\Users\\Andres Castellon\\source\\repos\\LabRelacion\\Relaciones\\Main\\Form1.cs",
+              "RelativeDocumentMoniker": "Main\\Form1.cs",
+              "ToolTip": "C:\\Users\\Andres Castellon\\source\\repos\\LabRelacion\\Relaciones\\Main\\Form1.cs [Dise\u00F1o]",
+              "RelativeToolTip": "Main\\Form1.cs [Dise\u00F1o]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-13T23:22:51.431Z",
+              "EditorCaption": " [Dise\u00F1o]"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

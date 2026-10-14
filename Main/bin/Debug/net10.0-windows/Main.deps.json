@@ -1,0 +1,75 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "Main/1.0.0": {
+        "dependencies": {
+          "ReaLTaiizor": "3.8.2.1",
+          "SunnyUI": "3.9.8"
+        },
+        "runtime": {
+          "Main.dll": {}
+        }
+      },
+      "ReaLTaiizor/3.8.2.1": {
+        "runtime": {
+          "lib/net10.0-windows7.0/ReaLTaiizor.dll": {
+            "assemblyVersion": "3.8.2.1",
+            "fileVersion": "3.8.2.1"
+          }
+        }
+      },
+      "SunnyUI/3.9.8": {
+        "dependencies": {
+          "SunnyUI.Common": "3.9.8"
+        },
+        "runtime": {
+          "lib/net10.0-windows7.0/SunnyUI.dll": {
+            "assemblyVersion": "3.9.8.0",
+            "fileVersion": "3.9.8.0"
+          }
+        }
+      },
+      "SunnyUI.Common/3.9.8": {
+        "runtime": {
+          "lib/net10.0/SunnyUI.Common.dll": {
+            "assemblyVersion": "3.9.8.0",
+            "fileVersion": "3.9.8.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Main/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ReaLTaiizor/3.8.2.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-RNrX7/YruPJfVIfWD0x9EIPmvPH5Mawf7lZbbFuQHhqp3Lo8oO+FNXvVT9JgDu+U/dgeM09ZOdo6SZQrQ16pdQ==",
+      "path": "realtaiizor/3.8.2.1",
+      "hashPath": "realtaiizor.3.8.2.1.nupkg.sha512"
+    },
+    "SunnyUI/3.9.8": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-yIowhP78oPy577Q3wDAvVY0StFDfm0cIF1eLMQeouyuJK8MwKXS7vKuG4VfRVzzqyQ0QzlOJdR2o4cO+H4hKAQ==",
+      "path": "sunnyui/3.9.8",
+      "hashPath": "sunnyui.3.9.8.nupkg.sha512"
+    },
+    "SunnyUI.Common/3.9.8": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-7iGm3BFHbuXUY19w5DHPfD9w1d7XDy59EddvrsZ1SfvERhPtNvHNnFxkVx8ZIiAtC7IlxXW66UwmtTEiON3iEA==",
+      "path": "sunnyui.common/3.9.8",
+      "hashPath": "sunnyui.common.3.9.8.nupkg.sha512"
+    }
+  }
+}
