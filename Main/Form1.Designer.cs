@@ -38,9 +38,9 @@
             foxBigLabel1 = new ReaLTaiizor.Controls.FoxBigLabel();
             PnlRelacion = new Sunny.UI.UIPanel();
             foxBigLabel9 = new ReaLTaiizor.Controls.FoxBigLabel();
-            Check3 = new ReaLTaiizor.Controls.HopeCheckBox();
-            Check2 = new ReaLTaiizor.Controls.HopeCheckBox();
-            Check1 = new ReaLTaiizor.Controls.HopeCheckBox();
+            CheckC = new ReaLTaiizor.Controls.HopeCheckBox();
+            CheckB = new ReaLTaiizor.Controls.HopeCheckBox();
+            CheckA = new ReaLTaiizor.Controls.HopeCheckBox();
             lblRelacion3 = new ReaLTaiizor.Controls.FoxBigLabel();
             txtRelacion3 = new ReaLTaiizor.Controls.BigTextBox();
             lblRelacion2 = new ReaLTaiizor.Controls.FoxBigLabel();
@@ -52,12 +52,12 @@
             btnGenerarRelacion = new ReaLTaiizor.Controls.Button();
             pictureBox1 = new PictureBox();
             PnlConjuntos = new Sunny.UI.UIPanel();
-            btnDeleteCj = new Sunny.UI.UIButton();
-            rbConjunto3 = new ReaLTaiizor.Controls.HopeRadioButton();
-            rbConjunto2 = new ReaLTaiizor.Controls.HopeRadioButton();
-            rbConjunto1 = new ReaLTaiizor.Controls.HopeRadioButton();
+            btnDeletecj = new Sunny.UI.UIButton();
+            rbC = new ReaLTaiizor.Controls.HopeRadioButton();
+            rbB = new ReaLTaiizor.Controls.HopeRadioButton();
+            rbA = new ReaLTaiizor.Controls.HopeRadioButton();
             foxBigLabel7 = new ReaLTaiizor.Controls.FoxBigLabel();
-            btnAggConjuntos = new ReaLTaiizor.Controls.Button();
+            btnAddcj = new ReaLTaiizor.Controls.Button();
             uiPanel1 = new Sunny.UI.UIPanel();
             PanelDigrafo = new ReaLTaiizor.Controls.FoxBigLabel();
             uiListBox1 = new Sunny.UI.UIListBox();
@@ -168,6 +168,7 @@
             btnAggElementos.TabIndex = 0;
             btnAggElementos.Text = "Agregar elementos";
             btnAggElementos.TextAlignment = StringAlignment.Center;
+            btnAggElementos.Click += btnAggElementos_Click;
             // 
             // foxBigLabel1
             // 
@@ -185,9 +186,9 @@
             // PnlRelacion
             // 
             PnlRelacion.Controls.Add(foxBigLabel9);
-            PnlRelacion.Controls.Add(Check3);
-            PnlRelacion.Controls.Add(Check2);
-            PnlRelacion.Controls.Add(Check1);
+            PnlRelacion.Controls.Add(CheckC);
+            PnlRelacion.Controls.Add(CheckB);
+            PnlRelacion.Controls.Add(CheckA);
             PnlRelacion.Controls.Add(lblRelacion3);
             PnlRelacion.Controls.Add(txtRelacion3);
             PnlRelacion.Controls.Add(lblRelacion2);
@@ -222,62 +223,62 @@
             foxBigLabel9.TabIndex = 30;
             foxBigLabel9.Text = "Ingrese las relaciones";
             // 
-            // Check3
+            // CheckC
             // 
-            Check3.AutoSize = true;
-            Check3.CheckedColor = Color.FromArgb(64, 158, 255);
-            Check3.DisabledColor = Color.FromArgb(196, 198, 202);
-            Check3.DisabledStringColor = Color.FromArgb(186, 187, 189);
-            Check3.Enable = true;
-            Check3.EnabledCheckedColor = Color.FromArgb(64, 158, 255);
-            Check3.EnabledStringColor = Color.FromArgb(153, 153, 153);
-            Check3.EnabledUncheckedColor = Color.FromArgb(156, 158, 161);
-            Check3.Font = new Font("Segoe UI", 12F);
-            Check3.ForeColor = Color.FromArgb(48, 49, 51);
-            Check3.Location = new Point(140, 67);
-            Check3.Name = "Check3";
-            Check3.Size = new Size(45, 20);
-            Check3.TabIndex = 29;
-            Check3.Text = "C";
-            Check3.UseVisualStyleBackColor = true;
+            CheckC.AutoSize = true;
+            CheckC.CheckedColor = Color.FromArgb(64, 158, 255);
+            CheckC.DisabledColor = Color.FromArgb(196, 198, 202);
+            CheckC.DisabledStringColor = Color.FromArgb(186, 187, 189);
+            CheckC.Enable = true;
+            CheckC.EnabledCheckedColor = Color.FromArgb(64, 158, 255);
+            CheckC.EnabledStringColor = Color.FromArgb(153, 153, 153);
+            CheckC.EnabledUncheckedColor = Color.FromArgb(156, 158, 161);
+            CheckC.Font = new Font("Segoe UI", 12F);
+            CheckC.ForeColor = Color.FromArgb(48, 49, 51);
+            CheckC.Location = new Point(161, 67);
+            CheckC.Name = "CheckC";
+            CheckC.Size = new Size(45, 20);
+            CheckC.TabIndex = 29;
+            CheckC.Text = "C";
+            CheckC.UseVisualStyleBackColor = true;
             // 
-            // Check2
+            // CheckB
             // 
-            Check2.AutoSize = true;
-            Check2.CheckedColor = Color.FromArgb(64, 158, 255);
-            Check2.DisabledColor = Color.FromArgb(196, 198, 202);
-            Check2.DisabledStringColor = Color.FromArgb(186, 187, 189);
-            Check2.Enable = true;
-            Check2.EnabledCheckedColor = Color.FromArgb(64, 158, 255);
-            Check2.EnabledStringColor = Color.FromArgb(153, 153, 153);
-            Check2.EnabledUncheckedColor = Color.FromArgb(156, 158, 161);
-            Check2.Font = new Font("Segoe UI", 12F);
-            Check2.ForeColor = Color.FromArgb(48, 49, 51);
-            Check2.Location = new Point(82, 67);
-            Check2.Name = "Check2";
-            Check2.Size = new Size(44, 20);
-            Check2.TabIndex = 28;
-            Check2.Text = "B";
-            Check2.UseVisualStyleBackColor = true;
+            CheckB.AutoSize = true;
+            CheckB.CheckedColor = Color.FromArgb(64, 158, 255);
+            CheckB.DisabledColor = Color.FromArgb(196, 198, 202);
+            CheckB.DisabledStringColor = Color.FromArgb(186, 187, 189);
+            CheckB.Enable = true;
+            CheckB.EnabledCheckedColor = Color.FromArgb(64, 158, 255);
+            CheckB.EnabledStringColor = Color.FromArgb(153, 153, 153);
+            CheckB.EnabledUncheckedColor = Color.FromArgb(156, 158, 161);
+            CheckB.Font = new Font("Segoe UI", 12F);
+            CheckB.ForeColor = Color.FromArgb(48, 49, 51);
+            CheckB.Location = new Point(82, 67);
+            CheckB.Name = "CheckB";
+            CheckB.Size = new Size(44, 20);
+            CheckB.TabIndex = 28;
+            CheckB.Text = "B";
+            CheckB.UseVisualStyleBackColor = true;
             // 
-            // Check1
+            // CheckA
             // 
-            Check1.AutoSize = true;
-            Check1.CheckedColor = Color.FromArgb(64, 158, 255);
-            Check1.DisabledColor = Color.FromArgb(196, 198, 202);
-            Check1.DisabledStringColor = Color.FromArgb(186, 187, 189);
-            Check1.Enable = true;
-            Check1.EnabledCheckedColor = Color.FromArgb(64, 158, 255);
-            Check1.EnabledStringColor = Color.FromArgb(153, 153, 153);
-            Check1.EnabledUncheckedColor = Color.FromArgb(156, 158, 161);
-            Check1.Font = new Font("Segoe UI", 12F);
-            Check1.ForeColor = Color.FromArgb(48, 49, 51);
-            Check1.Location = new Point(19, 67);
-            Check1.Name = "Check1";
-            Check1.Size = new Size(45, 20);
-            Check1.TabIndex = 13;
-            Check1.Text = "A";
-            Check1.UseVisualStyleBackColor = true;
+            CheckA.AutoSize = true;
+            CheckA.CheckedColor = Color.FromArgb(64, 158, 255);
+            CheckA.DisabledColor = Color.FromArgb(196, 198, 202);
+            CheckA.DisabledStringColor = Color.FromArgb(186, 187, 189);
+            CheckA.Enable = true;
+            CheckA.EnabledCheckedColor = Color.FromArgb(64, 158, 255);
+            CheckA.EnabledStringColor = Color.FromArgb(153, 153, 153);
+            CheckA.EnabledUncheckedColor = Color.FromArgb(156, 158, 161);
+            CheckA.Font = new Font("Segoe UI", 12F);
+            CheckA.ForeColor = Color.FromArgb(48, 49, 51);
+            CheckA.Location = new Point(19, 67);
+            CheckA.Name = "CheckA";
+            CheckA.Size = new Size(45, 20);
+            CheckA.TabIndex = 13;
+            CheckA.Text = "A";
+            CheckA.UseVisualStyleBackColor = true;
             // 
             // lblRelacion3
             // 
@@ -426,12 +427,12 @@
             // 
             // PnlConjuntos
             // 
-            PnlConjuntos.Controls.Add(btnDeleteCj);
-            PnlConjuntos.Controls.Add(rbConjunto3);
-            PnlConjuntos.Controls.Add(rbConjunto2);
-            PnlConjuntos.Controls.Add(rbConjunto1);
+            PnlConjuntos.Controls.Add(btnDeletecj);
+            PnlConjuntos.Controls.Add(rbC);
+            PnlConjuntos.Controls.Add(rbB);
+            PnlConjuntos.Controls.Add(rbA);
             PnlConjuntos.Controls.Add(foxBigLabel7);
-            PnlConjuntos.Controls.Add(btnAggConjuntos);
+            PnlConjuntos.Controls.Add(btnAddcj);
             PnlConjuntos.FillColor = Color.White;
             PnlConjuntos.Font = new Font("Segoe UI Symbol", 9.75F);
             PnlConjuntos.Location = new Point(12, 53);
@@ -446,89 +447,90 @@
             PnlConjuntos.Text = null;
             PnlConjuntos.TextAlignment = ContentAlignment.MiddleCenter;
             // 
-            // btnDeleteCj
+            // btnDeletecj
             // 
-            btnDeleteCj.FillColor = Color.White;
-            btnDeleteCj.FillColor2 = Color.FromArgb(59, 91, 219);
-            btnDeleteCj.FillHoverColor = Color.FromArgb(192, 0, 0);
-            btnDeleteCj.FillPressColor = Color.Silver;
-            btnDeleteCj.FillSelectedColor = Color.FromArgb(192, 0, 0);
-            btnDeleteCj.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnDeleteCj.ForeColor = Color.FromArgb(59, 91, 219);
-            btnDeleteCj.Location = new Point(148, 89);
-            btnDeleteCj.MinimumSize = new Size(1, 1);
-            btnDeleteCj.Name = "btnDeleteCj";
-            btnDeleteCj.RectColor = Color.FromArgb(59, 91, 219);
-            btnDeleteCj.RectHoverColor = Color.FromArgb(192, 0, 0);
-            btnDeleteCj.RectPressColor = Color.Silver;
-            btnDeleteCj.RectSelectedColor = Color.FromArgb(192, 0, 0);
-            btnDeleteCj.Size = new Size(115, 31);
-            btnDeleteCj.TabIndex = 5;
-            btnDeleteCj.Text = "Eliminar";
-            btnDeleteCj.TipsFont = new Font("Microsoft Sans Serif", 9F);
+            btnDeletecj.FillColor = Color.White;
+            btnDeletecj.FillColor2 = Color.FromArgb(59, 91, 219);
+            btnDeletecj.FillHoverColor = Color.FromArgb(192, 0, 0);
+            btnDeletecj.FillPressColor = Color.Silver;
+            btnDeletecj.FillSelectedColor = Color.FromArgb(192, 0, 0);
+            btnDeletecj.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnDeletecj.ForeColor = Color.FromArgb(59, 91, 219);
+            btnDeletecj.Location = new Point(148, 89);
+            btnDeletecj.MinimumSize = new Size(1, 1);
+            btnDeletecj.Name = "btnDeletecj";
+            btnDeletecj.RectColor = Color.FromArgb(59, 91, 219);
+            btnDeletecj.RectHoverColor = Color.FromArgb(192, 0, 0);
+            btnDeletecj.RectPressColor = Color.Silver;
+            btnDeletecj.RectSelectedColor = Color.FromArgb(192, 0, 0);
+            btnDeletecj.Size = new Size(115, 31);
+            btnDeletecj.TabIndex = 5;
+            btnDeletecj.Text = "Eliminar";
+            btnDeletecj.TipsFont = new Font("Microsoft Sans Serif", 9F);
+            btnDeletecj.Click += btnDeletecj_Click;
             // 
-            // rbConjunto3
+            // rbC
             // 
-            rbConjunto3.AutoSize = true;
-            rbConjunto3.BackColor = Color.White;
-            rbConjunto3.CheckedColor = Color.FromArgb(64, 158, 255);
-            rbConjunto3.DisabledColor = Color.FromArgb(196, 198, 202);
-            rbConjunto3.DisabledStringColor = Color.FromArgb(186, 187, 189);
-            rbConjunto3.Enable = true;
-            rbConjunto3.EnabledCheckedColor = Color.FromArgb(64, 158, 255);
-            rbConjunto3.EnabledStringColor = Color.FromArgb(146, 146, 146);
-            rbConjunto3.EnabledUncheckedColor = Color.FromArgb(156, 158, 161);
-            rbConjunto3.Font = new Font("Segoe UI Symbol", 9.75F);
-            rbConjunto3.ForeColor = Color.FromArgb(76, 88, 100);
-            rbConjunto3.Location = new Point(19, 102);
-            rbConjunto3.Name = "rbConjunto3";
-            rbConjunto3.Size = new Size(97, 20);
-            rbConjunto3.TabIndex = 15;
-            rbConjunto3.TabStop = true;
-            rbConjunto3.Text = "Conjunto C";
-            rbConjunto3.UseVisualStyleBackColor = false;
+            rbC.AutoSize = true;
+            rbC.BackColor = Color.White;
+            rbC.CheckedColor = Color.FromArgb(64, 158, 255);
+            rbC.DisabledColor = Color.FromArgb(196, 198, 202);
+            rbC.DisabledStringColor = Color.FromArgb(186, 187, 189);
+            rbC.Enable = true;
+            rbC.EnabledCheckedColor = Color.FromArgb(64, 158, 255);
+            rbC.EnabledStringColor = Color.FromArgb(146, 146, 146);
+            rbC.EnabledUncheckedColor = Color.FromArgb(156, 158, 161);
+            rbC.Font = new Font("Segoe UI Symbol", 9.75F);
+            rbC.ForeColor = Color.FromArgb(76, 88, 100);
+            rbC.Location = new Point(19, 102);
+            rbC.Name = "rbC";
+            rbC.Size = new Size(97, 20);
+            rbC.TabIndex = 15;
+            rbC.TabStop = true;
+            rbC.Text = "Conjunto C";
+            rbC.UseVisualStyleBackColor = false;
             // 
-            // rbConjunto2
+            // rbB
             // 
-            rbConjunto2.AutoSize = true;
-            rbConjunto2.BackColor = Color.White;
-            rbConjunto2.CheckedColor = Color.FromArgb(64, 158, 255);
-            rbConjunto2.DisabledColor = Color.FromArgb(196, 198, 202);
-            rbConjunto2.DisabledStringColor = Color.FromArgb(186, 187, 189);
-            rbConjunto2.Enable = true;
-            rbConjunto2.EnabledCheckedColor = Color.FromArgb(64, 158, 255);
-            rbConjunto2.EnabledStringColor = Color.FromArgb(146, 146, 146);
-            rbConjunto2.EnabledUncheckedColor = Color.FromArgb(156, 158, 161);
-            rbConjunto2.Font = new Font("Segoe UI Symbol", 9.75F);
-            rbConjunto2.ForeColor = Color.FromArgb(76, 88, 100);
-            rbConjunto2.Location = new Point(19, 75);
-            rbConjunto2.Name = "rbConjunto2";
-            rbConjunto2.Size = new Size(96, 20);
-            rbConjunto2.TabIndex = 14;
-            rbConjunto2.TabStop = true;
-            rbConjunto2.Text = "Conjunto B";
-            rbConjunto2.UseVisualStyleBackColor = false;
+            rbB.AutoSize = true;
+            rbB.BackColor = Color.White;
+            rbB.CheckedColor = Color.FromArgb(64, 158, 255);
+            rbB.DisabledColor = Color.FromArgb(196, 198, 202);
+            rbB.DisabledStringColor = Color.FromArgb(186, 187, 189);
+            rbB.Enable = true;
+            rbB.EnabledCheckedColor = Color.FromArgb(64, 158, 255);
+            rbB.EnabledStringColor = Color.FromArgb(146, 146, 146);
+            rbB.EnabledUncheckedColor = Color.FromArgb(156, 158, 161);
+            rbB.Font = new Font("Segoe UI Symbol", 9.75F);
+            rbB.ForeColor = Color.FromArgb(76, 88, 100);
+            rbB.Location = new Point(19, 75);
+            rbB.Name = "rbB";
+            rbB.Size = new Size(96, 20);
+            rbB.TabIndex = 14;
+            rbB.TabStop = true;
+            rbB.Text = "Conjunto B";
+            rbB.UseVisualStyleBackColor = false;
             // 
-            // rbConjunto1
+            // rbA
             // 
-            rbConjunto1.AutoSize = true;
-            rbConjunto1.BackColor = Color.White;
-            rbConjunto1.CheckedColor = Color.FromArgb(64, 158, 255);
-            rbConjunto1.DisabledColor = Color.FromArgb(196, 198, 202);
-            rbConjunto1.DisabledStringColor = Color.FromArgb(186, 187, 189);
-            rbConjunto1.Enable = true;
-            rbConjunto1.EnabledCheckedColor = Color.FromArgb(64, 158, 255);
-            rbConjunto1.EnabledStringColor = Color.FromArgb(146, 146, 146);
-            rbConjunto1.EnabledUncheckedColor = Color.FromArgb(156, 158, 161);
-            rbConjunto1.Font = new Font("Segoe UI Symbol", 9.75F);
-            rbConjunto1.ForeColor = Color.FromArgb(76, 88, 100);
-            rbConjunto1.Location = new Point(19, 47);
-            rbConjunto1.Name = "rbConjunto1";
-            rbConjunto1.Size = new Size(97, 20);
-            rbConjunto1.TabIndex = 13;
-            rbConjunto1.TabStop = true;
-            rbConjunto1.Text = "Conjunto A";
-            rbConjunto1.UseVisualStyleBackColor = false;
+            rbA.AutoSize = true;
+            rbA.BackColor = Color.White;
+            rbA.CheckedColor = Color.FromArgb(64, 158, 255);
+            rbA.DisabledColor = Color.FromArgb(196, 198, 202);
+            rbA.DisabledStringColor = Color.FromArgb(186, 187, 189);
+            rbA.Enable = true;
+            rbA.EnabledCheckedColor = Color.FromArgb(64, 158, 255);
+            rbA.EnabledStringColor = Color.FromArgb(146, 146, 146);
+            rbA.EnabledUncheckedColor = Color.FromArgb(156, 158, 161);
+            rbA.Font = new Font("Segoe UI Symbol", 9.75F);
+            rbA.ForeColor = Color.FromArgb(76, 88, 100);
+            rbA.Location = new Point(19, 47);
+            rbA.Name = "rbA";
+            rbA.Size = new Size(97, 20);
+            rbA.TabIndex = 13;
+            rbA.TabStop = true;
+            rbA.Text = "Conjunto A";
+            rbA.UseVisualStyleBackColor = false;
             // 
             // foxBigLabel7
             // 
@@ -543,24 +545,25 @@
             foxBigLabel7.TabIndex = 4;
             foxBigLabel7.Text = "Conjuntos";
             // 
-            // btnAggConjuntos
+            // btnAddcj
             // 
-            btnAggConjuntos.BackColor = Color.Transparent;
-            btnAggConjuntos.BorderColor = Color.Transparent;
-            btnAggConjuntos.EnteredBorderColor = Color.Transparent;
-            btnAggConjuntos.EnteredColor = Color.FromArgb(0, 192, 0);
-            btnAggConjuntos.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnAggConjuntos.Image = null;
-            btnAggConjuntos.ImageAlign = ContentAlignment.MiddleLeft;
-            btnAggConjuntos.InactiveColor = Color.FromArgb(59, 91, 219);
-            btnAggConjuntos.Location = new Point(148, 52);
-            btnAggConjuntos.Name = "btnAggConjuntos";
-            btnAggConjuntos.PressedBorderColor = Color.Gray;
-            btnAggConjuntos.PressedColor = Color.Gray;
-            btnAggConjuntos.Size = new Size(115, 31);
-            btnAggConjuntos.TabIndex = 0;
-            btnAggConjuntos.Text = "Agregar";
-            btnAggConjuntos.TextAlignment = StringAlignment.Center;
+            btnAddcj.BackColor = Color.Transparent;
+            btnAddcj.BorderColor = Color.Transparent;
+            btnAddcj.EnteredBorderColor = Color.Transparent;
+            btnAddcj.EnteredColor = Color.FromArgb(0, 192, 0);
+            btnAddcj.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnAddcj.Image = null;
+            btnAddcj.ImageAlign = ContentAlignment.MiddleLeft;
+            btnAddcj.InactiveColor = Color.FromArgb(59, 91, 219);
+            btnAddcj.Location = new Point(148, 52);
+            btnAddcj.Name = "btnAddcj";
+            btnAddcj.PressedBorderColor = Color.Gray;
+            btnAddcj.PressedColor = Color.Gray;
+            btnAddcj.Size = new Size(115, 31);
+            btnAddcj.TabIndex = 0;
+            btnAddcj.Text = "Agregar";
+            btnAddcj.TextAlignment = StringAlignment.Center;
+            btnAddcj.Click += btnAddcj_Click;
             // 
             // uiPanel1
             // 
@@ -864,10 +867,10 @@
         private PictureBox pictureBox1;
         private Sunny.UI.UIPanel PnlConjuntos;
         private ReaLTaiizor.Controls.FoxBigLabel foxBigLabel7;
-        private ReaLTaiizor.Controls.Button btnAggConjuntos;
-        private ReaLTaiizor.Controls.HopeRadioButton rbConjunto1;
-        private ReaLTaiizor.Controls.HopeRadioButton rbConjunto3;
-        private ReaLTaiizor.Controls.HopeRadioButton rbConjunto2;
+        private ReaLTaiizor.Controls.Button btnAddcj;
+        private ReaLTaiizor.Controls.HopeRadioButton rbA;
+        private ReaLTaiizor.Controls.HopeRadioButton rbC;
+        private ReaLTaiizor.Controls.HopeRadioButton rbB;
         private ReaLTaiizor.Controls.Button btnEliminarconjuntos;
         private ReaLTaiizor.Controls.FoxBigLabel foxBigLabel4;
         private ReaLTaiizor.Controls.HopeRadioButton rbRelacion3;
@@ -897,14 +900,14 @@
         private ReaLTaiizor.Controls.CheckBox checkBox1;
         private ReaLTaiizor.Controls.AloneCheckBox aloneCheckBox1;
         private ReaLTaiizor.Controls.AirCheckBox airCheckBox1;
-        private ReaLTaiizor.Controls.HopeCheckBox Check1;
-        private ReaLTaiizor.Controls.HopeCheckBox Check3;
-        private ReaLTaiizor.Controls.HopeCheckBox Check2;
+        private ReaLTaiizor.Controls.HopeCheckBox CheckA;
+        private ReaLTaiizor.Controls.HopeCheckBox CheckC;
+        private ReaLTaiizor.Controls.HopeCheckBox CheckB;
         private ReaLTaiizor.Controls.FoxBigLabel foxBigLabel9;
         private ReaLTaiizor.Controls.FoxCheckBoxEdit foxCheckBoxEdit1;
         private ReaLTaiizor.Controls.FoxCheckBox foxCheckBox1;
         private ReaLTaiizor.Controls.ForeverCheckBox foreverCheckBox1;
-        private Sunny.UI.UIButton btnDeleteCj;
+        private Sunny.UI.UIButton btnDeletecj;
         private Sunny.UI.UIButton btnExportar;
     }
 }
