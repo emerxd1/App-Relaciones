@@ -44,3 +44,26 @@ C:\Users\Jose Guerrero\source\repos\App-Relaciones\Main\obj\Debug\net10.0-window
 C:\Users\Jose Guerrero\source\repos\App-Relaciones\Main\obj\Debug\net10.0-windows\Main.pdb
 C:\Users\Jose Guerrero\source\repos\App-Relaciones\Main\obj\Debug\net10.0-windows\Main.genruntimeconfig.cache
 C:\Users\Jose Guerrero\source\repos\App-Relaciones\Main\obj\Debug\net10.0-windows\ref\Main.dll
+C:\Users\USER\source\repos\App-Relaciones\Main\bin\Debug\net10.0-windows\Main.exe
+C:\Users\USER\source\repos\App-Relaciones\Main\bin\Debug\net10.0-windows\Main.deps.json
+C:\Users\USER\source\repos\App-Relaciones\Main\bin\Debug\net10.0-windows\Main.runtimeconfig.json
+C:\Users\USER\source\repos\App-Relaciones\Main\bin\Debug\net10.0-windows\Main.dll
+C:\Users\USER\source\repos\App-Relaciones\Main\bin\Debug\net10.0-windows\Main.pdb
+C:\Users\USER\source\repos\App-Relaciones\Main\bin\Debug\net10.0-windows\ReaLTaiizor.dll
+C:\Users\USER\source\repos\App-Relaciones\Main\bin\Debug\net10.0-windows\SunnyUI.dll
+C:\Users\USER\source\repos\App-Relaciones\Main\bin\Debug\net10.0-windows\SunnyUI.Common.dll
+C:\Users\USER\source\repos\App-Relaciones\Main\obj\Debug\net10.0-windows\Main.csproj.AssemblyReference.cache
+C:\Users\USER\source\repos\App-Relaciones\Main\obj\Debug\net10.0-windows\Main.Form1.resources
+C:\Users\USER\source\repos\App-Relaciones\Main\obj\Debug\net10.0-windows\Main.Properties.Resources.resources
+C:\Users\USER\source\repos\App-Relaciones\Main\obj\Debug\net10.0-windows\Main.csproj.GenerateResource.cache
+C:\Users\USER\source\repos\App-Relaciones\Main\obj\Debug\net10.0-windows\Main.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\USER\source\repos\App-Relaciones\Main\obj\Debug\net10.0-windows\Main.AssemblyInfoInputs.cache
+C:\Users\USER\source\repos\App-Relaciones\Main\obj\Debug\net10.0-windows\Main.AssemblyInfo.cs
+C:\Users\USER\source\repos\App-Relaciones\Main\obj\Debug\net10.0-windows\Main.csproj.CoreCompileInputs.cache
+C:\Users\USER\source\repos\App-Relaciones\Main\obj\Debug\net10.0-windows\Main.sourcelink.json
+C:\Users\USER\source\repos\App-Relaciones\Main\obj\Debug\net10.0-windows\Main.csproj.Up2Date
+C:\Users\USER\source\repos\App-Relaciones\Main\obj\Debug\net10.0-windows\Main.dll
+C:\Users\USER\source\repos\App-Relaciones\Main\obj\Debug\net10.0-windows\refint\Main.dll
+C:\Users\USER\source\repos\App-Relaciones\Main\obj\Debug\net10.0-windows\Main.pdb
+C:\Users\USER\source\repos\App-Relaciones\Main\obj\Debug\net10.0-windows\Main.genruntimeconfig.cache
+C:\Users\USER\source\repos\App-Relaciones\Main\obj\Debug\net10.0-windows\ref\Main.dll
