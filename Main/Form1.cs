@@ -8,22 +8,33 @@ namespace Main
 {
     public partial class Form1 : Form
     {
-        // Diccionario privado de lectura para almacenar los  conjuntos.
-        // La Clave (string) es el nombre del conjunto ej. A, B
-        // y el Valor (List<int>) es la lista de numeros enteros que contiene ese conjunto.
-        private readonly Dictionary<string, List<int>> conjuntos = new();
+        // ---------- Constantes ----------
+        private const int MaxConjuntos = 5;   // el limite real vive en GestionConjuntos (cambiarlo alli tambien)
+
+        // Distribucion de los radios dentro del panel "Conjuntos" (ajustar si hace falta)
+        private const int RadioX0 = 10;
+        private const int RadioY0 = 40;
+        private const int RadioAncho = 130;   // ancho de cada columna
+        private const int RadioAlto = 23;
+        private const int RadioPorColumna = 5;
+
+        // ---------- Campos ----------
+        private readonly GestionConjuntos gestion = new GestionConjuntos();
+        private Conjunto conjuntoActual;   // el conjunto seleccionado
+
+        // pares guardados: (conjunto1, x, conjunto2, y)
         private readonly List<(string, int, string, int)> relaciones = new();
 
-        private readonly List<string> ordenConjuntos = new();
+        // Controles dinamicos del panel "Pares de la relacion"
+        private Control padreRel;                 // panel que contiene los checkbox y las cajas
+        private int xIni, yCheck, yEtiqueta, yCaja, alturaCheck, alturaCaja;
+        private readonly List<Control> dinamicos = new();
+        private readonly Dictionary<string, Sunny.UI.UICheckBox> checks = new();
+        private readonly Dictionary<string, Sunny.UI.UITextBox> cajas = new();
 
         public Form1()
         {
             InitializeComponent();
-
-            // Radio buttons
-            rbA.CheckedChanged += rbConjunto_CheckedChanged;
-            rbB.CheckedChanged += rbConjunto_CheckedChanged;
-            rbC.CheckedChanged += rbConjunto_CheckedChanged;
 
             // Botones (el -= evita que se enlace dos veces si el diseñador ya lo hizo)
             btnAddcj.Click -= btnAddcj_Click;
@@ -35,235 +46,383 @@ namespace Main
             btnAggElementos.Click -= btnAggElementos_Click;
             btnAggElementos.Click += btnAggElementos_Click;
 
-            // Quita los números de ejemplo (1 a 5) que traen los ListBox desde el diseñador
-            uiListBox1.Items.Clear();
-            uiListBox2.Items.Clear();
-
-            uiListBox1.Items.Clear();
-            uiListBox2.Items.Clear();
-
-            uiListBox1.Font = new Font("Consolas", 12); // NUEVO: letra de ancho fijo para que las columnas se alineen
-
-            EnlazarEnter(txtElementos); // enter para el cuadro agregarr los elementos
-
-            ActualizarEstadoBotones();
-
-            //eventos del panel de relaciones
             btnGenerarRelacion.Click -= btnGenerarRelacion_Click;
             btnGenerarRelacion.Click += btnGenerarRelacion_Click;
 
-            CheckA.CheckedChanged += CheckConjunto_CheckedChanged;
-            CheckB.CheckedChanged += CheckConjunto_CheckedChanged;
-            CheckC.CheckedChanged += CheckConjunto_CheckedChanged;
+            // Quita los números de ejemplo que traen los ListBox desde el diseñador
+            uiListBox1.Items.Clear();
+            uiListBox2.Items.Clear();
+            uiListBox1.Font = new Font("Consolas", 12);
 
-
-            CheckConjunto_CheckedChanged(null, EventArgs.Empty);
-
-            ActualizarEstadoBotones();
+            EnlazarEnter(txtElementos); // enter para agregar elementos
         }
 
-        //saber que occion el usuario escojio
-        private string ConjuntoSeleccionado()
+        private void Form1_Load(object sender, EventArgs e)
         {
-            if (rbA.Checked) return "A"; // Si el btn A es seleccionado va a retornar a A
-            if (rbB.Checked) return "B"; // Si el btn A es seleccionado va a retornar a B
-            if (rbC.Checked) return "C"; // Si el btn A es seleccionado va a retornar a C
-            return null;
+            PrepararPanelRelaciones();   // oculta CheckA/B/C, las 3 cajas y sus etiquetas
+
+            CrearRadio(gestion.AddNewSet());   // A
+            CrearRadio(gestion.AddNewSet());   // B
+            CrearRadio(gestion.AddNewSet());   // C
+
+            // Marcar el primero dispara Radio_CheckedChanged
+            PrimerRadio().Checked = true;
+
+            RehacerChecks();
         }
 
-        // muestra en el ListBox los elementos del conjunto seleccionado
-        private void MostrarElementos()
+        // =====================================================================
+        //  RADIOS (SunnyUI) - misma logica que el formulario de Venn
+        // =====================================================================
+        private IEnumerable<Sunny.UI.UIRadioButton> Radios() =>
+            PnlConjuntos.Controls.OfType<Sunny.UI.UIRadioButton>();
+
+        private Sunny.UI.UIRadioButton PrimerRadio() => Radios().First();
+
+        private void CrearRadio(Conjunto conjunto)
         {
-            uiListBox1.Items.Clear(); // borra lo que habia
+            int indice = Radios().Count();
 
-            string sel = ConjuntoSeleccionado(); // letra del conjunto marcado (A, B o C)
-
-            if (sel != null && conjuntos.ContainsKey(sel)) // solo si ese conjunto ya fue agregado
-            {
-                foreach (int n in conjuntos[sel])
-                    uiListBox1.Items.Add(n.ToString());
-            }
+            var rb = new Sunny.UI.UIRadioButton();
+            rb.Text = conjunto.Nombre;
+            rb.Tag = conjunto;
+            rb.Size = new Size(RadioAncho, RadioAlto);
+            // posicion manual (si el panel es un FlowLayoutPanel simplemente se ignora)
+            rb.Location = new Point(
+                RadioX0 + (indice / RadioPorColumna) * RadioAncho,
+                RadioY0 + (indice % RadioPorColumna) * RadioAlto);
+            rb.CheckedChanged += Radio_CheckedChanged;
+            PnlConjuntos.Controls.Add(rb);
         }
 
-        private void uiPanel1_Click(object sender, EventArgs e)
+        private void Radio_CheckedChanged(object sender, EventArgs e)
         {
+            var rb = (Sunny.UI.UIRadioButton)sender;
+            if (!rb.Checked) return;
 
-        }
-
-        private void uiPanel3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void btnAddcj_Click(object sender, EventArgs e)
-        {
-            string nombre = ConjuntoSeleccionado(); // obtiene la letra del conjunto seleccionado A, B o C
-
-            if (nombre == null) // validamos que se haya seleccionado un conjunto
-            {
-                MessageBox.Show("Seleccione un conjunto (A, B o C).");
-                return;
-            }
-
-            if (conjuntos.ContainsKey(nombre)) // Valida que el conjunto no haya sido agregado anteriormente
-            {
-                MessageBox.Show($"El conjunto {nombre} ya fue agregado.");
-                return;
-            }
-
-            conjuntos[nombre] = new List<int>(); // inicializa el conjunto en el diccionario con una lista vacia de numeros
-            ordenConjuntos.Add(nombre); // recuerda el orden en que se agrego
-            MostrarElementos(); // lo muestra en el cuadro de elementos
-            ActualizarEstadoBotones(); // actualiza el estado visual de los botones
-            MessageBox.Show($"El conjunto {nombre} se ha añadido correctamente.");
-            ActualizarEstadoBotones(); // actualiza el estado visual de los botones
-        }
-
-        private void btnDeletecj_Click(object sender, EventArgs e)
-        {
-            string nombre = ConjuntoSeleccionado(); // obtiene la letra del conjunto seleccionado A, B o C
-
-
-            if (nombre == null || !conjuntos.ContainsKey(nombre)) //valida que se haya seleccionado un conjunto que exista en el dic
-            {
-                MessageBox.Show("Ese conjunto no existe.");
-                return;
-            }
-
-            conjuntos.Remove(nombre); // elimina el conjunto del diccionario usando el nombre como id
-            ordenConjuntos.Remove(nombre);//elimina la lista de orden
-            relaciones.RemoveAll(r => r.Item1 == nombre || r.Item3 == nombre); // quita las relaciones que usaban en ese conjunto
-            MostrarElementos();   // refresca el ListBox de elementos
-            MostrarRelaciones(); // las relaciones
-            ActualizarEstadoBotones();// actualiza la interfaz
-        }
-
-        private void rbConjunto_CheckedChanged(object sender, EventArgs e) // cuando cambie lo que seleccionamos, actualiza los botoneas
-        {
-            ActualizarEstadoBotones(); // actualiza los botones de la interfas segun la opcion
+            conjuntoActual = (Conjunto)rb.Tag;
             MostrarElementos();
         }
 
-        private void ActualizarEstadoBotones() //actualiza los botones y los checkboxes
+        // Borra todos los radios y los recrea desde gestion
+        // (solo toca los radios: los botones Agregar/Eliminar del panel se quedan)
+        private void RehacerRadios()
         {
-            //obtiene y verifica si existe el el dic
-            string sel = ConjuntoSeleccionado();
-            bool existe = sel != null && conjuntos.ContainsKey(sel);
+            foreach (var rb in Radios().ToList())
+            {
+                PnlConjuntos.Controls.Remove(rb);
+                rb.Dispose();
+            }
+            conjuntoActual = null;
 
-            btnAddcj.Enabled = sel != null && !existe;
-            btnDeletecj.Enabled = existe;
+            foreach (Conjunto c in gestion.Conjuntos)
+                CrearRadio(c);
 
-            // los checkbox solo va a funcionar solo si los conjuntos han sido creados 
-            CheckA.Enabled = conjuntos.ContainsKey("A");
-            CheckB.Enabled = conjuntos.ContainsKey("B");
-            CheckC.Enabled = conjuntos.ContainsKey("C");
-            //si un conjunto no está disponible, se desmarca su casilla automáticamente
-            if (!CheckA.Enabled) CheckA.Checked = false;
-            if (!CheckB.Enabled) CheckB.Checked = false;
-            if (!CheckC.Enabled) CheckC.Checked = false;
+            PrimerRadio().Checked = true;
+        }
+
+        // Busca un conjunto por su nombre (A, B, C...)
+        private Conjunto Buscar(string nombre) =>
+            gestion.Conjuntos.FirstOrDefault(c => c.Nombre == nombre);
+
+        // Nombre corto para mostrar: "Conjunto A" -> "A"
+        private static string Corto(string nombre)
+        {
+            string corto = nombre.Replace("Conjunto", "").Trim();
+            return corto.Length > 0 ? corto : nombre;
+        }
+
+        // =====================================================================
+        //  CHECKBOXES + CAJAS DINAMICOS (SunnyUI)
+        //  Fila 1: un checkbox por conjunto
+        //  Fila 2: una etiqueta + una caja por conjunto
+        // =====================================================================
+
+        // Posicion de un control respecto a un ancestro (sin necesitar el handle)
+        private Point PosicionEn(Control c, Control ancestro)
+        {
+            Point p = c.Location;
+            Control q = c.Parent;
+            while (q != null && q != ancestro)
+            {
+                p.Offset(q.Location);
+                q = q.Parent;
+            }
+            return p;
+        }
+
+        // Se ejecuta una sola vez: guarda donde estaban los controles fijos
+        // del diseñador, los oculta y deja listo el panel para los dinamicos.
+        private void PrepararPanelRelaciones()
+        {
+            padreRel = CheckA.Parent;
+
+            xIni = CheckA.Left;
+            yCheck = CheckA.Top;
+            alturaCheck = CheckA.Height;
+
+            yCaja = PosicionEn(txtRelacion1, padreRel).Y;
+            alturaCaja = txtRelacion1.Height;
+
+            // etiquetas fijas "A", "B", "C" que estan encima de las cajas (son FoxBigLabel)
+            yEtiqueta = PosicionEn(lblRelacion1, padreRel).Y;
+
+            foreach (Control c in new Control[]
+            {
+                CheckA, CheckB, CheckC,
+                lblRelacion1, lblRelacion2, foxBigLabel10,
+                txtRelacion1, bigTextBox2, txtRelacion3
+            })
+                c.Visible = false;
+        }
+
+        // Borra y recrea los controles desde gestion, conservando lo marcado/escrito
+        private void RehacerChecks()
+        {
+            var marcadosAntes = new HashSet<string>(ConjuntosMarcados());
+            var textosAntes = cajas.ToDictionary(k => k.Key, k => k.Value.Text);
+
+            padreRel.SuspendLayout();
+
+            foreach (Control c in dinamicos)
+            {
+                padreRel.Controls.Remove(c);
+                c.Dispose();
+            }
+            dinamicos.Clear();
+            checks.Clear();
+            cajas.Clear();
+
+            int n = gestion.Conjuntos.Count;
+            const int separacion = 6;
+            int disponible = padreRel.ClientSize.Width - xIni - 12;
+            int ancho = Math.Max(40, Math.Min(70, (disponible - (n - 1) * separacion) / n));
+
+            int i = 0;
+            foreach (Conjunto c in gestion.Conjuntos)
+            {
+                int x = xIni + i * (ancho + separacion);
+                bool marcado = marcadosAntes.Contains(c.Nombre);
+
+                // --- checkbox ---
+                var chk = new Sunny.UI.UICheckBox();
+                chk.Text = Corto(c.Nombre);
+                chk.Location = new Point(x, yCheck - 3);
+                chk.Size = new Size(ancho, Math.Max(alturaCheck, 26));
+                chk.Checked = marcado;
+                chk.CheckedChanged += CheckConjunto_CheckedChanged;
+
+                // --- etiqueta encima de la caja ---
+                var lbl = new Sunny.UI.UILabel();
+                lbl.Text = Corto(c.Nombre);
+                lbl.Location = new Point(x, yEtiqueta);
+                lbl.Size = new Size(ancho, 23);
+                lbl.Font = new Font(lbl.Font, FontStyle.Bold);
+
+                // --- caja de texto ---
+                var txt = new Sunny.UI.UITextBox();
+                txt.Watermark = "Ej: " + (i + 1);
+                txt.Location = new Point(x, yCaja);
+                txt.Size = new Size(ancho, alturaCaja);
+                if (marcado && textosAntes.TryGetValue(c.Nombre, out string previo))
+                    txt.Text = previo;
+                txt.Enabled = marcado;
+
+                padreRel.Controls.Add(chk);
+                padreRel.Controls.Add(lbl);
+                padreRel.Controls.Add(txt);
+                dinamicos.Add(chk);
+                dinamicos.Add(lbl);
+                dinamicos.Add(txt);
+
+                checks[c.Nombre] = chk;
+                cajas[c.Nombre] = txt;
+                i++;
+            }
+
+            padreRel.ResumeLayout();
+
+            CheckConjunto_CheckedChanged(null, EventArgs.Empty);
+        }
+
+        // devuelve los nombres de los conjuntos marcados (en orden de creacion)
+        private List<string> ConjuntosMarcados()
+        {
+            var lista = new List<string>();
+            foreach (Conjunto c in gestion.Conjuntos)
+                if (checks.TryGetValue(c.Nombre, out Sunny.UI.UICheckBox chk) && chk.Checked)
+                    lista.Add(c.Nombre);
+            return lista;
+        }
+
+        // devuelve el texto de la caja que corresponde a cada conjunto
+        private string TextoCaja(string conjunto) =>
+            cajas.TryGetValue(conjunto, out Sunny.UI.UITextBox t) ? t.Text : "";
+
+        // se ejecuta cada vez que marcas o desmarcas un conjunto
+        private void CheckConjunto_CheckedChanged(object sender, EventArgs e)
+        {
+            foreach (var par in checks)
+            {
+                Sunny.UI.UITextBox caja = cajas[par.Key];
+                caja.Enabled = par.Value.Checked;          // solo activa las marcadas
+                if (!par.Value.Checked) caja.Text = "";    // vacia las desmarcadas
+            }
+
+            // con un solo conjunto marcado se escribe el par completo (ej. 1,2)
+            bool unico = ConjuntosMarcados().Count == 1;
+            int num = 1;
+            foreach (Conjunto conj in gestion.Conjuntos)
+            {
+                if (cajas.TryGetValue(conj.Nombre, out Sunny.UI.UITextBox cj))
+                    cj.Watermark = (unico && checks[conj.Nombre].Checked) ? "Ej: 1,2" : "Ej: " + num;
+                num++;
+            }
+
+            MostrarRelaciones();
+        }
+
+        // =====================================================================
+        //  ELEMENTOS
+        // =====================================================================
+        private void MostrarElementos()
+        {
+            uiListBox1.Items.Clear();
+            if (conjuntoActual == null) return;
+
+            foreach (string el in conjuntoActual.Elementos)
+                uiListBox1.Items.Add(el);
         }
 
         private void btnAggElementos_Click(object sender, EventArgs e)
         {
-            string sel = ConjuntoSeleccionado(); // obtiene la letra del conjunto seleccionado
-
-            if (sel == null || !conjuntos.ContainsKey(sel)) // el conjunto tiene que estar seleccionado y haber sido agregado
+            if (conjuntoActual == null)
             {
-                MessageBox.Show("Primero seleccione y agregue un conjunto.");
+                MessageBox.Show("Primero seleccione un conjunto.");
                 return;
             }
 
-            uiListBox1.Items.Clear(); // borra lo que habia
-
-            string texto = LeerTexto(txtElementos); // texto que escribio el usuario
+            string texto = LeerTexto(txtElementos);
             if (string.IsNullOrWhiteSpace(texto))
             {
                 MessageBox.Show("Escriba los elementos, ej. 1,2,3,4");
                 return;
             }
 
-            var elementos = new List<int>();
-            foreach (string parte in texto.Split(',')) // recorre los conjuntos en orden de creacion
+            var nuevos = new List<int>();
+            foreach (string parte in texto.Split(','))
             {
-                if (int.TryParse(parte.Trim(), out int n)) // si es un numero valido lo agrega
-                    elementos.Add(n);
-                else if (!string.IsNullOrWhiteSpace(parte)) // si escribio algo que no es numero avisa y cancela
+                if (int.TryParse(parte.Trim(), out int n))
+                    nuevos.Add(n);
+                else if (!string.IsNullOrWhiteSpace(parte))
                 {
                     MessageBox.Show($"'{parte.Trim()}' no es un número válido.");
                     return;
                 }
             }
 
-            // une los elementos que ya tenia con los nuevos, sin diplicarlo y los ordena
-            conjuntos[sel] = conjuntos[sel].Concat(elementos).Distinct().ToList();
+            foreach (int n in nuevos)
+                if (!conjuntoActual.Elementos.Contains(n.ToString())) // sin duplicados
+                    conjuntoActual.AgregarElemento(n.ToString());
 
-            MostrarElementos(); // refresca el ListBox
-            txtElementos.Text = ""; // limpia el cuadro de texto
+            MostrarElementos();
+            txtElementos.Text = "";
         }
 
-        // devuelve las letras de los conjuntos marcados en los checkbox
-        private List<string> ConjuntosMarcados()
+        // =====================================================================
+        //  AGREGAR / ELIMINAR CONJUNTOS
+        // =====================================================================
+        private void btnAddcj_Click(object sender, EventArgs e)
         {
-            var lista = new List<string>();
-            if (CheckA.Checked) lista.Add("A");
-            if (CheckB.Checked) lista.Add("B");
-            if (CheckC.Checked) lista.Add("C");
-            return lista;
+            Conjunto nuevo = gestion.AddNewSet();
+            if (nuevo == null)
+            {
+                MessageBox.Show($"Alcanzaste el máximo de {MaxConjuntos} conjuntos.", "Información",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            RehacerRadios();   // aparece su radio
+            RehacerChecks();   // aparece su checkbox, su etiqueta y su caja
         }
 
-        // devuelve el texto de la caja que corresponde a cada conjunto
-        private string TextoCaja(string conjunto)
+        private void btnDeletecj_Click(object sender, EventArgs e)
         {
-            if (conjunto == "A") return txtRelacion1.Text;
-            if (conjunto == "B") return bigTextBox2.Text;
-            return txtRelacion3.Text;
+            if (conjuntoActual == null) return;
+
+            var respuesta = MessageBox.Show(
+                $"¿Eliminar {conjuntoActual.Nombre} y todos sus elementos?",
+                "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (respuesta != DialogResult.Yes) return;
+
+            string nombre = conjuntoActual.Nombre;
+            if (!gestion.DeleteSet(conjuntoActual))
+            {
+                MessageBox.Show("Debe haber al menos 1 conjunto.", "Información",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // las relaciones que usaban ese conjunto ya no tienen sentido
+            relaciones.RemoveAll(r => r.Item1 == nombre || r.Item3 == nombre);
+
+            RehacerRadios();
+            RehacerChecks();
         }
 
-
-        // se ejecuta cada vez que marcas o desmarcas A, B o C
-        private void CheckConjunto_CheckedChanged(object sender, EventArgs e)
-        {
-            // activa solo las cajas de los conjuntos marcados
-            txtRelacion1.Enabled = CheckA.Checked;
-            bigTextBox2.Enabled = CheckB.Checked;
-            txtRelacion3.Enabled = CheckC.Checked;
-
-            // vacía las cajas de los conjuntos desmarcados
-            if (!CheckA.Checked) txtRelacion1.Text = "";
-            if (!CheckB.Checked) bigTextBox2.Text = "";
-            if (!CheckC.Checked) txtRelacion3.Text = "";
-
-            MostrarRelaciones();
-        }
+        // =====================================================================
+        //  RELACIONES
+        // =====================================================================
 
         // crea el par con los valores escritos y lo guarda
         private void btnGenerarRelacion_Click(object sender, EventArgs e)
         {
             var marcados = ConjuntosMarcados();
 
-            if (marcados.Count != 2) // se relacionan exactamente dos conjuntos
+            if (marcados.Count < 1 || marcados.Count > 2)
             {
-                MessageBox.Show("Marque exactamente dos conjuntos para relacionar.");
+                MessageBox.Show("Marque un conjunto (A con A) o dos conjuntos para relacionar.");
                 return;
             }
 
-            string c1 = marcados[0]; // primer conjunto del par
-            string c2 = marcados[1]; // segundo conjunto del par
+            string c1 = marcados[0];
+            string c2 = marcados.Count == 2 ? marcados[1] : marcados[0];
+            int x, y;
 
-            // los dos valores tienen que ser numeros
-            if (!int.TryParse(TextoCaja(c1).Trim(), out int x) || !int.TryParse(TextoCaja(c2).Trim(), out int y))
+            if (marcados.Count == 2)
             {
-                MessageBox.Show("Ingrese un numero valido en cada caja.");
-                return;
+                // dos conjuntos: un numero en cada caja
+                if (!int.TryParse(TextoCaja(c1).Trim(), out x) ||
+                    !int.TryParse(TextoCaja(c2).Trim(), out y))
+                {
+                    MessageBox.Show("Ingrese un numero valido en cada caja.");
+                    return;
+                }
             }
+            else
+            {
+                // un solo conjunto: el par completo en su caja, ej. 1,2
+                string[] partes = TextoCaja(c1).Split(new[] { ',', ';', ' ' },
+                                                      StringSplitOptions.RemoveEmptyEntries);
+                x = 0;
+                y = 0;
+                if (partes.Length != 2 || !int.TryParse(partes[0], out x) || !int.TryParse(partes[1], out y))
+                {
+                    MessageBox.Show("Escriba el par separado por coma, ej. 1,2");
+                    return;
+                }
+            }
+
+            Conjunto s1 = Buscar(c1);
+            Conjunto s2 = Buscar(c2);
 
             // cada numero tiene que pertenecer a su conjunto
-            if (!conjuntos[c1].Contains(x))
+            if (!s1.Elementos.Contains(x.ToString()))
             {
                 MessageBox.Show($"{x} no es un elemento del conjunto {c1}.");
                 return;
             }
-            if (!conjuntos[c2].Contains(y))
+            if (!s2.Elementos.Contains(y.ToString()))
             {
                 MessageBox.Show($"{y} no es un elemento del conjunto {c2}.");
                 return;
@@ -278,90 +437,49 @@ namespace Main
             relaciones.Add((c1, x, c2, y));
             MostrarRelaciones();
 
-            // limpia las cajas de los dos conjuntos
-            txtRelacion1.Text = "";
-            bigTextBox2.Text = "";
-            txtRelacion3.Text = "";
+            // limpia todas las cajas
+            foreach (var caja in cajas.Values)
+                caja.Text = "";
         }
 
-        // muestra todos los pares en el ListBox de relaciones
+        // muestra los pares de la combinacion marcada en el ListBox de relaciones
         private void MostrarRelaciones()
         {
-            uiListBox2.Items.Clear(); // borra lo que habia
+            uiListBox2.Items.Clear();
 
-            var marcados = ConjuntosMarcados(); // letras marcadas
-            if (marcados.Count != 2) return; // solo se muestran cuando hay exactamente dos marcados
+            var marcados = ConjuntosMarcados();
+            if (marcados.Count < 1 || marcados.Count > 2) return; // uno (A con A) o dos conjuntos
 
-            string c1 = marcados[0]; // primer conjunto del par
-            string c2 = marcados[1]; // segundo conjunto del par
+            string c1 = marcados[0];
+            string c2 = marcados.Count == 2 ? marcados[1] : marcados[0];
 
             foreach (var r in relaciones)
             {
-                // solo los pares que pertenecen a esta combinacion (ej. A con B)
                 if (r.Item1 == c1 && r.Item3 == c2)
-                    uiListBox2.Items.Add($"{r.Item1}→{r.Item3}: ({r.Item2}, {r.Item4})");
+                    uiListBox2.Items.Add($"{Corto(r.Item1)}→{Corto(r.Item3)}: ({r.Item2}, {r.Item4})");
             }
         }
-
-        // lee el texto real del control
-        private string LeerTexto(Control control)
-        {
-            if (control is TextBox tb) return tb.Text; // si ya es un TextBox normal
-
-            foreach (Control hijo in control.Controls) // busca un TextBox dentro del control
-            {
-                string t = LeerTexto(hijo);
-                if (hijo is TextBox || !string.IsNullOrEmpty(t)) return t;
-            }
-            return control.Text; // si no encuentra ninguno, usa el Text normal
-        }
-
-        // precionar enter para agregar los conjuntos
-        private void txtElementos_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                e.SuppressKeyPress = true; // evita el sonido de "ding" de Windows
-                btnAggElementos_Click(sender, EventArgs.Empty);
-            }
-        }
-
-        // enlaza el evento al control
-        private void EnlazarEnter(Control control)
-        {
-            control.KeyDown += txtElementos_KeyDown;
-            foreach (Control hijo in control.Controls)
-                EnlazarEnter(hijo);
-        }
-
-        private void btnGenerarRelacion_Click_1(object sender, EventArgs e)
-        {
-
-        }
-
 
         private List<Relacion> ConstruirRelaciones()
         {
             var lista = new List<Relacion>();
 
-            var claves = relaciones
-                .Select(r => r.Item1 + r.Item3)   // ej. "AC"
+            var pares = relaciones
+                .Select(r => (r.Item1, r.Item3))
                 .Distinct()
-                .OrderBy(k => k, StringComparer.Ordinal)
-                .ToList();
+                .OrderBy(p => p.Item1, StringComparer.Ordinal)
+                .ThenBy(p => p.Item2, StringComparer.Ordinal);
 
-            foreach (string clave in claves)
+            foreach (var (n1, n2) in pares)
             {
-                string c1 = clave.Substring(0, 1);
-                string c2 = clave.Substring(1, 1);
-                if (!conjuntos.ContainsKey(c1) || !conjuntos.ContainsKey(c2)) continue;
+                Conjunto s1 = Buscar(n1);
+                Conjunto s2 = Buscar(n2);
+                if (s1 == null || s2 == null) continue;
 
-                var rel = new Relacion(
-                    c1, conjuntos[c1].Select(n => n.ToString()).ToList(),
-                    c2, conjuntos[c2].Select(n => n.ToString()).ToList());
+                var rel = new Relacion(Corto(n1), s1.Elementos.ToList(), Corto(n2), s2.Elementos.ToList());
 
                 foreach (var r in relaciones)
-                    if (r.Item1 == c1 && r.Item3 == c2)
+                    if (r.Item1 == n1 && r.Item3 == n2)
                         rel.Agregar(r.Item2.ToString(), r.Item4.ToString(), out _);
 
                 lista.Add(rel);
@@ -369,9 +487,63 @@ namespace Main
             return lista;
         }
 
+        // Conjuntos que participan en alguna relacion (para dibujar una sola matriz y un solo digrafo)
+        private List<GrupoGrafica> ConstruirGrupos()
+        {
+            var usados = new HashSet<string>();
+            foreach (var r in relaciones)
+            {
+                usados.Add(r.Item1);
+                usados.Add(r.Item3);
+            }
+
+            return gestion.Conjuntos
+                .Where(c => usados.Contains(c.Nombre))
+                .Select(c => new GrupoGrafica
+                {
+                    Clave = c.Nombre,
+                    Etiqueta = Corto(c.Nombre),
+                    Elementos = c.Elementos.ToList()
+                })
+                .ToList();
+        }
+
+        // =====================================================================
+        //  UTILIDADES
+        // =====================================================================
+
+        // lee el texto real del control
+        private string LeerTexto(Control control)
+        {
+            if (control is TextBox tb) return tb.Text;
+
+            foreach (Control hijo in control.Controls)
+            {
+                string t = LeerTexto(hijo);
+                if (hijo is TextBox || !string.IsNullOrEmpty(t)) return t;
+            }
+            return control.Text;
+        }
+
+        // presionar enter para agregar los elementos
+        private void txtElementos_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true; // evita el "ding" de Windows
+                btnAggElementos_Click(sender, EventArgs.Empty);
+            }
+        }
+
+        private void EnlazarEnter(Control control)
+        {
+            control.KeyDown += txtElementos_KeyDown;
+            foreach (Control hijo in control.Controls)
+                EnlazarEnter(hijo);
+        }
+
         // ---------------------------------------------------------------------
-        //  Encuentra los paneles grandes buscando sus títulos
-        //  ("Digrafo", "Matriz...", "Propiedad...")
+        //  Paneles grandes: se encuentran buscando sus titulos
         // ---------------------------------------------------------------------
         private Control BuscarPorTexto(Control raiz, string inicio)
         {
@@ -387,13 +559,13 @@ namespace Main
             return null;
         }
 
-        // CORREGIDO: este metodo faltaba. Devuelve el panel real que contiene el titulo.
+        // Devuelve el panel real que contiene el titulo
         private Control PanelPorTitulo(params string[] posibles)
         {
             foreach (string p in posibles)
             {
                 Control c = BuscarPorTexto(this, p);
-                if (c != null) return c.Parent;   // el titulo esta dentro del panel real
+                if (c != null) return c.Parent;
             }
             return null;
         }
@@ -413,9 +585,7 @@ namespace Main
             return true;
         }
 
-        // ---------------------------------------------------------------------
-        //  Crea (una sola vez) un panel con scroll + imagen dentro del panel grande
-        // ---------------------------------------------------------------------
+        // Crea (una sola vez) un panel con scroll + imagen dentro del panel grande
         private PictureBox ImagenEn(Control cont)
         {
             int top = 45; // deja libre el título del panel
@@ -474,19 +644,17 @@ namespace Main
 
         private void DibujarMatrizYPropiedades(Control pMatriz, Control pProp)
         {
-            List<Relacion> lista = ConstruirRelaciones();
-            MostrarImagen(ImagenEn(pMatriz), Multi.Matrices(lista));
-            TextoEn(pProp).Text = Multi.Propiedades(lista);
+            MostrarImagen(ImagenEn(pMatriz), Grafica.Matriz(ConstruirGrupos(), relaciones));
+            TextoEn(pProp).Text = Multi.Propiedades(ConstruirRelaciones());
         }
 
         private void DibujarDigrafo(Control pDigrafo)
         {
-            List<Relacion> lista = ConstruirRelaciones();
             PictureBox pb = ImagenEn(pDigrafo);
             Size vp = pb.Parent.ClientSize;
             int w = Math.Max(vp.Width - SystemInformation.VerticalScrollBarWidth - 2, 300);
             int h = Math.Max(vp.Height - 40, 280);
-            MostrarImagen(pb, Multi.Digrafos(lista, w, h));
+            MostrarImagen(pb, Grafica.Digrafo(ConstruirGrupos(), relaciones, w, h));
         }
 
         // Genera las tres salidas de una vez
@@ -498,8 +666,7 @@ namespace Main
         }
 
         // ---------------------------------------------------------------------
-        //  BOTÓN: Generar Matriz  (matrices + propiedades de todas las relaciones)
-        //  CORREGIDO: estaba duplicado; ahora existe una sola vez
+        //  BOTONES: Matriz / Diagrama / Exportar
         // ---------------------------------------------------------------------
         private void btnMatriz_Click(object sender, EventArgs e)
         {
@@ -512,9 +679,6 @@ namespace Main
             DibujarMatrizYPropiedades(pMatriz, pProp);
         }
 
-        // ---------------------------------------------------------------------
-        //  BOTÓN: Generar Diagrama  (dígrafo de todas las relaciones)
-        // ---------------------------------------------------------------------
         private void btnDiagrama_Click(object sender, EventArgs e)
         {
             if (relaciones.Count == 0)
@@ -526,9 +690,6 @@ namespace Main
             DibujarDigrafo(pDigrafo);
         }
 
-        // ---------------------------------------------------------------------
-        //  BOTÓN: Exportar imágenes  (un dígrafo y una matriz por relación)
-        // ---------------------------------------------------------------------
         private void btnExportar_Click(object sender, EventArgs e)
         {
             if (relaciones.Count == 0)
@@ -544,16 +705,14 @@ namespace Main
 
                 try
                 {
-                    foreach (Relacion r in ConstruirRelaciones())
-                    {
-                        string sufijo = r.NombreDom + r.NombreCod; // ej. AC
-                        using (Bitmap d = Dibujo.Digrafo(r, 1200, 900))
-                            d.Save(System.IO.Path.Combine(dlg.SelectedPath, "digrafo_" + sufijo + ".png"),
-                                   System.Drawing.Imaging.ImageFormat.Png);
-                        using (Bitmap m = Dibujo.Matriz(r))
-                            m.Save(System.IO.Path.Combine(dlg.SelectedPath, "matriz_" + sufijo + ".png"),
-                                   System.Drawing.Imaging.ImageFormat.Png);
-                    }
+                    List<GrupoGrafica> grupos = ConstruirGrupos();
+
+                    using (Bitmap d = Grafica.Digrafo(grupos, relaciones, 1200, 900))
+                        d.Save(System.IO.Path.Combine(dlg.SelectedPath, "digrafo.png"),
+                               System.Drawing.Imaging.ImageFormat.Png);
+                    using (Bitmap m = Grafica.Matriz(grupos, relaciones))
+                        m.Save(System.IO.Path.Combine(dlg.SelectedPath, "matriz.png"),
+                               System.Drawing.Imaging.ImageFormat.Png);
                     MessageBox.Show("Imagenes guardadas en:\n" + dlg.SelectedPath);
                 }
                 catch (Exception ex)
@@ -563,14 +722,14 @@ namespace Main
             }
         }
 
-        private void uiPanel1_Click_1(object sender, EventArgs e)
-        {
-
-        }
-
-        private void uiPanel4_Click(object sender, EventArgs e)
-        {
-
-        }
+        // ---------------------------------------------------------------------
+        //  Handlers vacios que el diseñador puede tener enlazados (no borrar
+        //  a menos que tambien los quites desde el diseñador)
+        // ---------------------------------------------------------------------
+        private void uiPanel1_Click(object sender, EventArgs e) { }
+        private void uiPanel1_Click_1(object sender, EventArgs e) { }
+        private void uiPanel3_Click(object sender, EventArgs e) { }
+        private void uiPanel4_Click(object sender, EventArgs e) { }
+        private void btnGenerarRelacion_Click_1(object sender, EventArgs e) { }
     }
 }
