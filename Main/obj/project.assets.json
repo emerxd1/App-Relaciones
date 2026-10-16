@@ -128,23 +128,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Jose Guerrero\\.nuget\\packages\\": {},
+    "C:\\Users\\USER\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Jose Guerrero\\source\\repos\\App-Relaciones\\Main\\Main.csproj",
+      "projectUniqueName": "C:\\Users\\USER\\source\\repos\\App-Relaciones\\Main\\Main.csproj",
       "projectName": "Main",
-      "projectPath": "C:\\Users\\Jose Guerrero\\source\\repos\\App-Relaciones\\Main\\Main.csproj",
-      "packagesPath": "C:\\Users\\Jose Guerrero\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Jose Guerrero\\source\\repos\\App-Relaciones\\Main\\obj\\",
+      "projectPath": "C:\\Users\\USER\\source\\repos\\App-Relaciones\\Main\\Main.csproj",
+      "packagesPath": "C:\\Users\\USER\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\USER\\source\\repos\\App-Relaciones\\Main\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\Jose Guerrero\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\USER\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -153,7 +153,6 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {

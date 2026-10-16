@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            elipseControl1 = new ElipseControl.ElipseControl();
             PnlElementos = new Sunny.UI.UIPanel();
             lblElementos = new ReaLTaiizor.Controls.FoxBigLabel();
             foxBigLabel2 = new ReaLTaiizor.Controls.FoxBigLabel();
@@ -83,11 +82,6 @@
             uiPanel4.SuspendLayout();
             SuspendLayout();
             // 
-            // elipseControl1
-            // 
-            elipseControl1.CornerRadius = 5;
-            elipseControl1.TargetControl = null;
-            // 
             // PnlElementos
             // 
             PnlElementos.Controls.Add(lblElementos);
@@ -95,13 +89,13 @@
             PnlElementos.Controls.Add(txtElementos);
             PnlElementos.Controls.Add(btnAggElementos);
             PnlElementos.Font = new Font("Microsoft Sans Serif", 12F);
-            PnlElementos.Location = new Point(12, 219);
-            PnlElementos.Margin = new Padding(4, 5, 4, 5);
+            PnlElementos.Location = new Point(15, 274);
+            PnlElementos.Margin = new Padding(5, 6, 5, 6);
             PnlElementos.MinimumSize = new Size(1, 1);
             PnlElementos.Name = "PnlElementos";
             PnlElementos.Radius = 10;
             PnlElementos.RectColor = Color.Gainsboro;
-            PnlElementos.Size = new Size(294, 178);
+            PnlElementos.Size = new Size(368, 222);
             PnlElementos.TabIndex = 2;
             PnlElementos.Text = null;
             PnlElementos.TextAlignment = ContentAlignment.MiddleCenter;
@@ -145,7 +139,7 @@
             txtElementos.Name = "txtElementos";
             txtElementos.PlaceholderText = "Ej:\"1,2,3,4\"";
             txtElementos.ReadOnly = false;
-            txtElementos.Size = new Size(258, 41);
+            txtElementos.Size = new Size(258, 46);
             txtElementos.TabIndex = 3;
             txtElementos.TextAlignment = HorizontalAlignment.Left;
             txtElementos.UseSystemPasswordChar = false;
@@ -177,9 +171,10 @@
             foxBigLabel1.ForeColor = Color.FromArgb(76, 88, 100);
             foxBigLabel1.Line = ReaLTaiizor.Controls.FoxBigLabel.Direction.Top;
             foxBigLabel1.LineColor = SystemColors.Control;
-            foxBigLabel1.Location = new Point(49, 4);
+            foxBigLabel1.Location = new Point(61, 5);
+            foxBigLabel1.Margin = new Padding(4);
             foxBigLabel1.Name = "foxBigLabel1";
-            foxBigLabel1.Size = new Size(165, 41);
+            foxBigLabel1.Size = new Size(206, 51);
             foxBigLabel1.TabIndex = 3;
             foxBigLabel1.Text = "Relaciones";
             // 
@@ -199,13 +194,13 @@
             PnlRelacion.Controls.Add(txtRelacion1);
             PnlRelacion.Controls.Add(btnGenerarRelacion);
             PnlRelacion.Font = new Font("Microsoft Sans Serif", 12F);
-            PnlRelacion.Location = new Point(12, 407);
-            PnlRelacion.Margin = new Padding(4, 5, 4, 5);
+            PnlRelacion.Location = new Point(15, 509);
+            PnlRelacion.Margin = new Padding(5, 6, 5, 6);
             PnlRelacion.MinimumSize = new Size(1, 1);
             PnlRelacion.Name = "PnlRelacion";
             PnlRelacion.Radius = 10;
             PnlRelacion.RectColor = Color.Gainsboro;
-            PnlRelacion.Size = new Size(294, 263);
+            PnlRelacion.Size = new Size(368, 329);
             PnlRelacion.TabIndex = 6;
             PnlRelacion.Text = null;
             PnlRelacion.TextAlignment = ContentAlignment.MiddleCenter;
@@ -237,7 +232,7 @@
             CheckC.ForeColor = Color.FromArgb(48, 49, 51);
             CheckC.Location = new Point(161, 67);
             CheckC.Name = "CheckC";
-            CheckC.Size = new Size(45, 20);
+            CheckC.Size = new Size(49, 20);
             CheckC.TabIndex = 29;
             CheckC.Text = "C";
             CheckC.UseVisualStyleBackColor = true;
@@ -256,7 +251,7 @@
             CheckB.ForeColor = Color.FromArgb(48, 49, 51);
             CheckB.Location = new Point(82, 67);
             CheckB.Name = "CheckB";
-            CheckB.Size = new Size(44, 20);
+            CheckB.Size = new Size(48, 20);
             CheckB.TabIndex = 28;
             CheckB.Text = "B";
             CheckB.UseVisualStyleBackColor = true;
@@ -275,7 +270,7 @@
             CheckA.ForeColor = Color.FromArgb(48, 49, 51);
             CheckA.Location = new Point(19, 67);
             CheckA.Name = "CheckA";
-            CheckA.Size = new Size(45, 20);
+            CheckA.Size = new Size(50, 20);
             CheckA.TabIndex = 13;
             CheckA.Text = "A";
             CheckA.UseVisualStyleBackColor = true;
@@ -305,7 +300,7 @@
             txtRelacion3.Name = "txtRelacion3";
             txtRelacion3.PlaceholderText = "Ej: 3";
             txtRelacion3.ReadOnly = false;
-            txtRelacion3.Size = new Size(65, 41);
+            txtRelacion3.Size = new Size(65, 46);
             txtRelacion3.TabIndex = 26;
             txtRelacion3.TextAlignment = HorizontalAlignment.Left;
             txtRelacion3.UseSystemPasswordChar = false;
@@ -335,7 +330,7 @@
             bigTextBox2.Name = "bigTextBox2";
             bigTextBox2.PlaceholderText = "Ej: 2";
             bigTextBox2.ReadOnly = false;
-            bigTextBox2.Size = new Size(65, 41);
+            bigTextBox2.Size = new Size(65, 46);
             bigTextBox2.TabIndex = 24;
             bigTextBox2.TextAlignment = HorizontalAlignment.Left;
             bigTextBox2.UseSystemPasswordChar = false;
@@ -375,7 +370,7 @@
             foxBigLabel5.LineColor = Color.White;
             foxBigLabel5.Location = new Point(5, 4);
             foxBigLabel5.Name = "foxBigLabel5";
-            foxBigLabel5.Size = new Size(199, 35);
+            foxBigLabel5.Size = new Size(258, 35);
             foxBigLabel5.TabIndex = 4;
             foxBigLabel5.Text = "Pares de la relacion";
             // 
@@ -391,7 +386,7 @@
             txtRelacion1.Name = "txtRelacion1";
             txtRelacion1.PlaceholderText = "Ej: 1";
             txtRelacion1.ReadOnly = false;
-            txtRelacion1.Size = new Size(65, 41);
+            txtRelacion1.Size = new Size(65, 46);
             txtRelacion1.TabIndex = 3;
             txtRelacion1.TextAlignment = HorizontalAlignment.Left;
             txtRelacion1.UseSystemPasswordChar = false;
@@ -414,13 +409,15 @@
             btnGenerarRelacion.TabIndex = 0;
             btnGenerarRelacion.Text = "Generar relacion";
             btnGenerarRelacion.TextAlignment = StringAlignment.Center;
+            btnGenerarRelacion.Click += btnGenerarRelacion_Click_1;
             // 
             // pictureBox1
             // 
             pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
-            pictureBox1.Location = new Point(12, 4);
+            pictureBox1.Location = new Point(15, 5);
+            pictureBox1.Margin = new Padding(4);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(50, 41);
+            pictureBox1.Size = new Size(62, 51);
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.TabIndex = 7;
             pictureBox1.TabStop = false;
@@ -435,13 +432,13 @@
             PnlConjuntos.Controls.Add(btnAddcj);
             PnlConjuntos.FillColor = Color.White;
             PnlConjuntos.Font = new Font("Segoe UI Symbol", 9.75F);
-            PnlConjuntos.Location = new Point(12, 53);
-            PnlConjuntos.Margin = new Padding(4, 5, 4, 5);
+            PnlConjuntos.Location = new Point(15, 66);
+            PnlConjuntos.Margin = new Padding(5, 6, 5, 6);
             PnlConjuntos.MinimumSize = new Size(1, 1);
             PnlConjuntos.Name = "PnlConjuntos";
             PnlConjuntos.Radius = 10;
             PnlConjuntos.RectColor = Color.Gainsboro;
-            PnlConjuntos.Size = new Size(294, 156);
+            PnlConjuntos.Size = new Size(368, 195);
             PnlConjuntos.Style = Sunny.UI.UIStyle.Custom;
             PnlConjuntos.TabIndex = 6;
             PnlConjuntos.Text = null;
@@ -484,7 +481,7 @@
             rbC.ForeColor = Color.FromArgb(76, 88, 100);
             rbC.Location = new Point(19, 102);
             rbC.Name = "rbC";
-            rbC.Size = new Size(97, 20);
+            rbC.Size = new Size(122, 20);
             rbC.TabIndex = 15;
             rbC.TabStop = true;
             rbC.Text = "Conjunto C";
@@ -505,7 +502,7 @@
             rbB.ForeColor = Color.FromArgb(76, 88, 100);
             rbB.Location = new Point(19, 75);
             rbB.Name = "rbB";
-            rbB.Size = new Size(96, 20);
+            rbB.Size = new Size(121, 20);
             rbB.TabIndex = 14;
             rbB.TabStop = true;
             rbB.Text = "Conjunto B";
@@ -526,7 +523,7 @@
             rbA.ForeColor = Color.FromArgb(76, 88, 100);
             rbA.Location = new Point(19, 47);
             rbA.Name = "rbA";
-            rbA.Size = new Size(97, 20);
+            rbA.Size = new Size(122, 20);
             rbA.TabIndex = 13;
             rbA.TabStop = true;
             rbA.Text = "Conjunto A";
@@ -570,17 +567,18 @@
             uiPanel1.Controls.Add(PanelDigrafo);
             uiPanel1.FillColor = Color.White;
             uiPanel1.Font = new Font("Segoe UI Symbol", 9.75F);
-            uiPanel1.Location = new Point(314, 56);
-            uiPanel1.Margin = new Padding(4, 5, 4, 5);
+            uiPanel1.Location = new Point(392, 70);
+            uiPanel1.Margin = new Padding(5, 6, 5, 6);
             uiPanel1.MinimumSize = new Size(1, 1);
             uiPanel1.Name = "uiPanel1";
             uiPanel1.Radius = 10;
             uiPanel1.RectColor = Color.Gainsboro;
-            uiPanel1.Size = new Size(630, 390);
+            uiPanel1.Size = new Size(788, 488);
             uiPanel1.Style = Sunny.UI.UIStyle.Custom;
             uiPanel1.TabIndex = 8;
             uiPanel1.Text = null;
             uiPanel1.TextAlignment = ContentAlignment.MiddleCenter;
+            uiPanel1.Click += uiPanel1_Click_1;
             // 
             // PanelDigrafo
             // 
@@ -622,13 +620,13 @@
             uiPanel2.Controls.Add(foxBigLabel6);
             uiPanel2.FillColor = Color.White;
             uiPanel2.Font = new Font("Segoe UI Symbol", 9.75F);
-            uiPanel2.Location = new Point(957, 56);
-            uiPanel2.Margin = new Padding(4, 5, 4, 5);
+            uiPanel2.Location = new Point(1196, 70);
+            uiPanel2.Margin = new Padding(5, 6, 5, 6);
             uiPanel2.MinimumSize = new Size(1, 1);
             uiPanel2.Name = "uiPanel2";
             uiPanel2.Radius = 10;
             uiPanel2.RectColor = Color.Gainsboro;
-            uiPanel2.Size = new Size(294, 390);
+            uiPanel2.Size = new Size(368, 488);
             uiPanel2.Style = Sunny.UI.UIStyle.Custom;
             uiPanel2.TabIndex = 20;
             uiPanel2.Text = null;
@@ -696,13 +694,13 @@
             uiPanel3.Controls.Add(PanelMatriz);
             uiPanel3.FillColor = Color.White;
             uiPanel3.Font = new Font("Segoe UI Symbol", 9.75F);
-            uiPanel3.Location = new Point(314, 456);
-            uiPanel3.Margin = new Padding(4, 5, 4, 5);
+            uiPanel3.Location = new Point(392, 570);
+            uiPanel3.Margin = new Padding(5, 6, 5, 6);
             uiPanel3.MinimumSize = new Size(1, 1);
             uiPanel3.Name = "uiPanel3";
             uiPanel3.Radius = 10;
             uiPanel3.RectColor = Color.Gainsboro;
-            uiPanel3.Size = new Size(630, 214);
+            uiPanel3.Size = new Size(788, 268);
             uiPanel3.Style = Sunny.UI.UIStyle.Custom;
             uiPanel3.TabIndex = 21;
             uiPanel3.Text = null;
@@ -718,7 +716,7 @@
             PanelMatriz.LineColor = Color.White;
             PanelMatriz.Location = new Point(3, 6);
             PanelMatriz.Name = "PanelMatriz";
-            PanelMatriz.Size = new Size(228, 35);
+            PanelMatriz.Size = new Size(271, 35);
             PanelMatriz.TabIndex = 4;
             PanelMatriz.Text = "Matriz de adyacencia";
             // 
@@ -727,17 +725,18 @@
             uiPanel4.Controls.Add(PanelPropierties);
             uiPanel4.FillColor = Color.White;
             uiPanel4.Font = new Font("Segoe UI Symbol", 9.75F);
-            uiPanel4.Location = new Point(957, 456);
-            uiPanel4.Margin = new Padding(4, 5, 4, 5);
+            uiPanel4.Location = new Point(1196, 570);
+            uiPanel4.Margin = new Padding(5, 6, 5, 6);
             uiPanel4.MinimumSize = new Size(1, 1);
             uiPanel4.Name = "uiPanel4";
             uiPanel4.Radius = 10;
             uiPanel4.RectColor = Color.Gainsboro;
-            uiPanel4.Size = new Size(294, 214);
+            uiPanel4.Size = new Size(368, 268);
             uiPanel4.Style = Sunny.UI.UIStyle.Custom;
             uiPanel4.TabIndex = 21;
             uiPanel4.Text = null;
             uiPanel4.TextAlignment = ContentAlignment.MiddleCenter;
+            uiPanel4.Click += uiPanel4_Click;
             // 
             // PanelPropierties
             // 
@@ -748,7 +747,7 @@
             PanelPropierties.LineColor = Color.White;
             PanelPropierties.Location = new Point(3, 3);
             PanelPropierties.Name = "PanelPropierties";
-            PanelPropierties.Size = new Size(140, 35);
+            PanelPropierties.Size = new Size(181, 35);
             PanelPropierties.TabIndex = 4;
             PanelPropierties.Text = "Propiedades";
             // 
@@ -762,14 +761,16 @@
             btnDiagrama.Image = (Image)resources.GetObject("btnDiagrama.Image");
             btnDiagrama.ImageAlign = ContentAlignment.MiddleLeft;
             btnDiagrama.InactiveColor = Color.FromArgb(59, 91, 219);
-            btnDiagrama.Location = new Point(1068, 14);
+            btnDiagrama.Location = new Point(1335, 18);
+            btnDiagrama.Margin = new Padding(4);
             btnDiagrama.Name = "btnDiagrama";
             btnDiagrama.PressedBorderColor = Color.FromArgb(165, 37, 37);
             btnDiagrama.PressedColor = Color.FromArgb(165, 37, 37);
-            btnDiagrama.Size = new Size(183, 31);
+            btnDiagrama.Size = new Size(229, 39);
             btnDiagrama.TabIndex = 6;
             btnDiagrama.Text = "Generar Diagrama";
             btnDiagrama.TextAlignment = StringAlignment.Far;
+            btnDiagrama.Click += btnDiagrama_Click;
             // 
             // btnMatriz
             // 
@@ -781,14 +782,16 @@
             btnMatriz.Image = (Image)resources.GetObject("btnMatriz.Image");
             btnMatriz.ImageAlign = ContentAlignment.MiddleLeft;
             btnMatriz.InactiveColor = Color.FromArgb(59, 91, 219);
-            btnMatriz.Location = new Point(886, 14);
+            btnMatriz.Location = new Point(1108, 18);
+            btnMatriz.Margin = new Padding(4);
             btnMatriz.Name = "btnMatriz";
             btnMatriz.PressedBorderColor = Color.FromArgb(165, 37, 37);
             btnMatriz.PressedColor = Color.FromArgb(165, 37, 37);
-            btnMatriz.Size = new Size(176, 31);
+            btnMatriz.Size = new Size(220, 39);
             btnMatriz.TabIndex = 22;
             btnMatriz.Text = "Generar Matriz";
             btnMatriz.TextAlignment = StringAlignment.Center;
+            btnMatriz.Click += btnMatriz_Click;
             // 
             // btnExportar
             // 
@@ -804,7 +807,8 @@
             btnExportar.ForeColor = Color.FromArgb(59, 91, 219);
             btnExportar.ForeDisableColor = Color.White;
             btnExportar.LightStyle = true;
-            btnExportar.Location = new Point(693, 14);
+            btnExportar.Location = new Point(866, 18);
+            btnExportar.Margin = new Padding(4);
             btnExportar.MinimumSize = new Size(1, 1);
             btnExportar.Name = "btnExportar";
             btnExportar.Radius = 10;
@@ -812,17 +816,18 @@
             btnExportar.RectHoverColor = Color.FromArgb(59, 91, 219);
             btnExportar.RectPressColor = Color.Silver;
             btnExportar.RectSelectedColor = Color.FromArgb(59, 91, 219);
-            btnExportar.Size = new Size(187, 31);
+            btnExportar.Size = new Size(234, 39);
             btnExportar.TabIndex = 23;
             btnExportar.Text = "Exportar imagenes";
             btnExportar.TipsFont = new Font("Microsoft Sans Serif", 9F);
+            btnExportar.Click += btnExportar_Click;
             // 
             // Form1
             // 
-            AutoScaleDimensions = new SizeF(96F, 96F);
+            AutoScaleDimensions = new SizeF(120F, 120F);
             AutoScaleMode = AutoScaleMode.Dpi;
             BackColor = Color.White;
-            ClientSize = new Size(1264, 681);
+            ClientSize = new Size(1580, 851);
             Controls.Add(btnExportar);
             Controls.Add(btnMatriz);
             Controls.Add(btnDiagrama);
@@ -836,6 +841,7 @@
             Controls.Add(PnlElementos);
             Controls.Add(pictureBox1);
             Icon = (Icon)resources.GetObject("$this.Icon");
+            Margin = new Padding(4);
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Relaciones y Difrafos | Matematicas Discretas";

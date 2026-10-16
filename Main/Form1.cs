@@ -1,3 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
+
 namespace Main
 {
     public partial class Form1 : Form
@@ -8,7 +14,7 @@ namespace Main
         private readonly Dictionary<string, List<int>> conjuntos = new();
         private readonly List<(string, int, string, int)> relaciones = new();
 
-private readonly List<string> ordenConjuntos = new();
+        private readonly List<string> ordenConjuntos = new();
 
         public Form1()
         {
@@ -109,7 +115,7 @@ private readonly List<string> ordenConjuntos = new();
             ordenConjuntos.Add(nombre); // recuerda el orden en que se agrego
             MostrarElementos(); // lo muestra en el cuadro de elementos
             ActualizarEstadoBotones(); // actualiza el estado visual de los botones
-            MessageBox.Show($"El conjunto {nombre} se ha añadido correctamente."); 
+            MessageBox.Show($"El conjunto {nombre} se ha añadido correctamente.");
             ActualizarEstadoBotones(); // actualiza el estado visual de los botones
         }
 
@@ -326,6 +332,245 @@ private readonly List<string> ordenConjuntos = new();
             control.KeyDown += txtElementos_KeyDown;
             foreach (Control hijo in control.Controls)
                 EnlazarEnter(hijo);
+        }
+
+        private void btnGenerarRelacion_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+
+        private List<Relacion> ConstruirRelaciones()
+        {
+            var lista = new List<Relacion>();
+
+            var claves = relaciones
+                .Select(r => r.Item1 + r.Item3)   // ej. "AC"
+                .Distinct()
+                .OrderBy(k => k, StringComparer.Ordinal)
+                .ToList();
+
+            foreach (string clave in claves)
+            {
+                string c1 = clave.Substring(0, 1);
+                string c2 = clave.Substring(1, 1);
+                if (!conjuntos.ContainsKey(c1) || !conjuntos.ContainsKey(c2)) continue;
+
+                var rel = new Relacion(
+                    c1, conjuntos[c1].Select(n => n.ToString()).ToList(),
+                    c2, conjuntos[c2].Select(n => n.ToString()).ToList());
+
+                foreach (var r in relaciones)
+                    if (r.Item1 == c1 && r.Item3 == c2)
+                        rel.Agregar(r.Item2.ToString(), r.Item4.ToString(), out _);
+
+                lista.Add(rel);
+            }
+            return lista;
+        }
+
+        // ---------------------------------------------------------------------
+        //  Encuentra los paneles grandes buscando sus títulos
+        //  ("Digrafo", "Matriz...", "Propiedad...")
+        // ---------------------------------------------------------------------
+        private Control BuscarPorTexto(Control raiz, string inicio)
+        {
+            foreach (Control hijo in raiz.Controls)
+            {
+                if (!string.IsNullOrEmpty(hijo.Text) &&
+                    hijo.Text.StartsWith(inicio, StringComparison.OrdinalIgnoreCase))
+                    return hijo;
+
+                Control encontrado = BuscarPorTexto(hijo, inicio);
+                if (encontrado != null) return encontrado;
+            }
+            return null;
+        }
+
+        // CORREGIDO: este metodo faltaba. Devuelve el panel real que contiene el titulo.
+        private Control PanelPorTitulo(params string[] posibles)
+        {
+            foreach (string p in posibles)
+            {
+                Control c = BuscarPorTexto(this, p);
+                if (c != null) return c.Parent;   // el titulo esta dentro del panel real
+            }
+            return null;
+        }
+
+        private bool ObtenerPaneles(out Control pDigrafo, out Control pMatriz, out Control pProp)
+        {
+            pDigrafo = PanelPorTitulo("Digrafo", "Dígrafo");
+            pMatriz = PanelPorTitulo("Matriz");
+            pProp = PanelPorTitulo("Propiedad");
+
+            if (pDigrafo == null || pMatriz == null || pProp == null)
+            {
+                MessageBox.Show("No encontre los paneles Digrafo, Matriz o Propiedades.\n" +
+                                "Revise que sus titulos empiecen con esas palabras.");
+                return false;
+            }
+            return true;
+        }
+
+        // ---------------------------------------------------------------------
+        //  Crea (una sola vez) un panel con scroll + imagen dentro del panel grande
+        // ---------------------------------------------------------------------
+        private PictureBox ImagenEn(Control cont)
+        {
+            int top = 45; // deja libre el título del panel
+            var sp = cont.Controls.OfType<Panel>().FirstOrDefault(p => p.Name == "scrollAuto");
+            if (sp == null)
+            {
+                sp = new Panel();
+                sp.Name = "scrollAuto";
+                sp.Location = new Point(5, top);
+                sp.Size = new Size(cont.Width - 10, cont.Height - top - 5);
+                sp.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+                sp.AutoScroll = true;
+                sp.BackColor = Color.White;
+
+                var pb = new PictureBox();
+                pb.Name = "pbAuto";
+                pb.SizeMode = PictureBoxSizeMode.AutoSize;
+                pb.Location = new Point(0, 0);
+                Panel panelScroll = sp;
+                pb.MouseEnter += (s, ev) => panelScroll.Focus(); // rueda del mouse
+
+                sp.Controls.Add(pb);
+                cont.Controls.Add(sp);
+                sp.BringToFront();
+            }
+            return (PictureBox)sp.Controls["pbAuto"];
+        }
+
+        private RichTextBox TextoEn(Control cont)
+        {
+            int top = 45;
+            var rtb = cont.Controls.OfType<RichTextBox>().FirstOrDefault(p => p.Name == "rtbAuto");
+            if (rtb == null)
+            {
+                rtb = new RichTextBox();
+                rtb.Name = "rtbAuto";
+                rtb.ReadOnly = true;
+                rtb.BorderStyle = BorderStyle.None;
+                rtb.BackColor = Color.White;
+                rtb.Font = new Font("Segoe UI", 10f);
+                rtb.Location = new Point(5, top);
+                rtb.Size = new Size(cont.Width - 10, cont.Height - top - 5);
+                rtb.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+                cont.Controls.Add(rtb);
+                rtb.BringToFront();
+            }
+            return rtb;
+        }
+
+        private void MostrarImagen(PictureBox pb, Bitmap nueva)
+        {
+            Image vieja = pb.Image;
+            pb.Image = nueva;
+            if (vieja != null) vieja.Dispose();
+        }
+
+        private void DibujarMatrizYPropiedades(Control pMatriz, Control pProp)
+        {
+            List<Relacion> lista = ConstruirRelaciones();
+            MostrarImagen(ImagenEn(pMatriz), Multi.Matrices(lista));
+            TextoEn(pProp).Text = Multi.Propiedades(lista);
+        }
+
+        private void DibujarDigrafo(Control pDigrafo)
+        {
+            List<Relacion> lista = ConstruirRelaciones();
+            PictureBox pb = ImagenEn(pDigrafo);
+            Size vp = pb.Parent.ClientSize;
+            int w = Math.Max(vp.Width - SystemInformation.VerticalScrollBarWidth - 2, 300);
+            int h = Math.Max(vp.Height - 40, 280);
+            MostrarImagen(pb, Multi.Digrafos(lista, w, h));
+        }
+
+        // Genera las tres salidas de una vez
+        private void GenerarSalidas()
+        {
+            if (!ObtenerPaneles(out Control pDigrafo, out Control pMatriz, out Control pProp)) return;
+            DibujarMatrizYPropiedades(pMatriz, pProp);
+            DibujarDigrafo(pDigrafo);
+        }
+
+        // ---------------------------------------------------------------------
+        //  BOTÓN: Generar Matriz  (matrices + propiedades de todas las relaciones)
+        //  CORREGIDO: estaba duplicado; ahora existe una sola vez
+        // ---------------------------------------------------------------------
+        private void btnMatriz_Click(object sender, EventArgs e)
+        {
+            if (relaciones.Count == 0)
+            {
+                MessageBox.Show("Primero genere una relacion.");
+                return;
+            }
+            if (!ObtenerPaneles(out Control pDigrafo, out Control pMatriz, out Control pProp)) return;
+            DibujarMatrizYPropiedades(pMatriz, pProp);
+        }
+
+        // ---------------------------------------------------------------------
+        //  BOTÓN: Generar Diagrama  (dígrafo de todas las relaciones)
+        // ---------------------------------------------------------------------
+        private void btnDiagrama_Click(object sender, EventArgs e)
+        {
+            if (relaciones.Count == 0)
+            {
+                MessageBox.Show("Primero genere una relacion.");
+                return;
+            }
+            if (!ObtenerPaneles(out Control pDigrafo, out Control pMatriz, out Control pProp)) return;
+            DibujarDigrafo(pDigrafo);
+        }
+
+        // ---------------------------------------------------------------------
+        //  BOTÓN: Exportar imágenes  (un dígrafo y una matriz por relación)
+        // ---------------------------------------------------------------------
+        private void btnExportar_Click(object sender, EventArgs e)
+        {
+            if (relaciones.Count == 0)
+            {
+                MessageBox.Show("Primero genere una relacion.");
+                return;
+            }
+
+            using (var dlg = new FolderBrowserDialog())
+            {
+                dlg.Description = "Elija la carpeta donde guardar las imagenes";
+                if (dlg.ShowDialog() != DialogResult.OK) return;
+
+                try
+                {
+                    foreach (Relacion r in ConstruirRelaciones())
+                    {
+                        string sufijo = r.NombreDom + r.NombreCod; // ej. AC
+                        using (Bitmap d = Dibujo.Digrafo(r, 1200, 900))
+                            d.Save(System.IO.Path.Combine(dlg.SelectedPath, "digrafo_" + sufijo + ".png"),
+                                   System.Drawing.Imaging.ImageFormat.Png);
+                        using (Bitmap m = Dibujo.Matriz(r))
+                            m.Save(System.IO.Path.Combine(dlg.SelectedPath, "matriz_" + sufijo + ".png"),
+                                   System.Drawing.Imaging.ImageFormat.Png);
+                    }
+                    MessageBox.Show("Imagenes guardadas en:\n" + dlg.SelectedPath);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("No se pudo guardar: " + ex.Message);
+                }
+            }
+        }
+
+        private void uiPanel1_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void uiPanel4_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
