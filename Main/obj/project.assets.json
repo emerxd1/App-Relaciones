@@ -128,23 +128,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\USER\\.nuget\\packages\\": {},
+    "C:\\Users\\Andres Castellon\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\USER\\source\\repos\\App-Relaciones\\Main\\Main.csproj",
+      "projectUniqueName": "C:\\Users\\Andres Castellon\\source\\repos\\LabRelacion\\Relaciones\\Main\\Main.csproj",
       "projectName": "Main",
-      "projectPath": "C:\\Users\\USER\\source\\repos\\App-Relaciones\\Main\\Main.csproj",
-      "packagesPath": "C:\\Users\\USER\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\USER\\source\\repos\\App-Relaciones\\Main\\obj\\",
+      "projectPath": "C:\\Users\\Andres Castellon\\source\\repos\\LabRelacion\\Relaciones\\Main\\Main.csproj",
+      "packagesPath": "C:\\Users\\Andres Castellon\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Andres Castellon\\source\\repos\\LabRelacion\\Relaciones\\Main\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\USER\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Andres Castellon\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],

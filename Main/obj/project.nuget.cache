@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "NVBrgbBFx7s=",
+  "dgSpecHash": "qAapTxA9W5k=",
   "success": true,
-  "projectFilePath": "C:\\Users\\USER\\source\\repos\\App-Relaciones\\Main\\Main.csproj",
+  "projectFilePath": "C:\\Users\\Andres Castellon\\source\\repos\\LabRelacion\\Relaciones\\Main\\Main.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\USER\\.nuget\\packages\\realtaiizor\\3.8.2.1\\realtaiizor.3.8.2.1.nupkg.sha512",
-    "C:\\Users\\USER\\.nuget\\packages\\sunnyui\\3.9.8\\sunnyui.3.9.8.nupkg.sha512",
-    "C:\\Users\\USER\\.nuget\\packages\\sunnyui.common\\3.9.8\\sunnyui.common.3.9.8.nupkg.sha512"
+    "C:\\Users\\Andres Castellon\\.nuget\\packages\\realtaiizor\\3.8.2.1\\realtaiizor.3.8.2.1.nupkg.sha512",
+    "C:\\Users\\Andres Castellon\\.nuget\\packages\\sunnyui\\3.9.8\\sunnyui.3.9.8.nupkg.sha512",
+    "C:\\Users\\Andres Castellon\\.nuget\\packages\\sunnyui.common\\3.9.8\\sunnyui.common.3.9.8.nupkg.sha512"
   ],
   "logs": []
 }
