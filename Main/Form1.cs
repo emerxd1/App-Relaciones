@@ -22,8 +22,8 @@ namespace Main
         private readonly GestionConjuntos gestion = new GestionConjuntos();
         private Conjunto conjuntoActual;   // el conjunto seleccionado
 
-        // pares guardados: (conjunto1, x, conjunto2, y)
-        private readonly List<(string, int, string, int)> relaciones = new();
+        // pares guardados: (conjunto1, elemento1, conjunto2, elemento2). Los elementos pueden ser numeros o letras
+        private readonly List<(string, string, string, string)> relaciones = new();
 
         // Controles dinamicos del panel "Pares de la relacion"
         private Control padreRel;                 // panel que contiene los checkbox y las cajas
@@ -32,7 +32,7 @@ namespace Main
         private readonly Dictionary<string, Sunny.UI.UICheckBox> checks = new();
         private readonly Dictionary<string, Sunny.UI.UITextBox> cajas = new();
 
-        // soon y arrastre
+        // zoom y arrastre
         private double zoomDigrafo = 1.0;
         private Control panelDigrafoRef;
         private Button btnZoomPct;
@@ -57,13 +57,14 @@ namespace Main
             btnGenerarRelacion.Click += btnGenerarRelacion_Click;
 
             // Quita los números de ejemplo que traen los ListBox desde el diseñador
-            uiListBox1.Items.Clear();
+            lbElements.Items.Clear();
             uiListBox2.Items.Clear();
-            uiListBox1.Font = new Font("Consolas", 12);
+            lbElements.Font = new Font("Consolas", 12);
 
-            EnlazarEnter(txtElementos); // enter para agregar elementos
+            EnlazarEnter(txtElementos);   // enter para agregar elementos
+            EnlazarFiltro(txtElementos);  // solo letras y numeros (y separadores)
 
-            // NUEVO: al cambiar el tamaño de la ventana, la matriz y el dígrafo se reajustan
+            // al cambiar el tamaño de la ventana, la matriz y el dígrafo se reajustan
             this.Resize += (s, ev) =>
             {
                 if (relaciones.Count > 0 && WindowState != FormWindowState.Minimized)
@@ -75,9 +76,9 @@ namespace Main
         {
             PrepararPanelRelaciones();   // oculta CheckA/B/C, las 3 cajas y sus etiquetas
 
-            CrearRadio(gestion.AddNewSet());   // A
-            CrearRadio(gestion.AddNewSet());   // B
-            CrearRadio(gestion.AddNewSet());   // C
+            CrearRadio(gestion.AddNewSet());   // 1
+            CrearRadio(gestion.AddNewSet());   // 2
+            CrearRadio(gestion.AddNewSet());   // 3
 
             // Marcar el primero dispara Radio_CheckedChanged
             PrimerRadio().Checked = true;
@@ -85,9 +86,7 @@ namespace Main
             RehacerChecks();
         }
 
-        // =====================================================================
-        //  RADIOS (SunnyUI) - misma logica que el formulario de Venn
-        // =====================================================================
+        //  RADIOS (SunnyUI)
         private IEnumerable<Sunny.UI.UIRadioButton> Radios() =>
             PnlConjuntos.Controls.OfType<Sunny.UI.UIRadioButton>();
 
@@ -98,7 +97,7 @@ namespace Main
             int indice = Radios().Count();
 
             var rb = new Sunny.UI.UIRadioButton();
-            rb.Text = conjunto.Nombre;
+            rb.Text = conjunto.Titulo;
             rb.Tag = conjunto;
             rb.Size = new Size(RadioAncho, RadioAlto);
             // posicion manual (si el panel es un FlowLayoutPanel simplemente se ignora)
@@ -135,22 +134,16 @@ namespace Main
             PrimerRadio().Checked = true;
         }
 
-        // Busca un conjunto por su nombre (A, B, C...)
+        // Busca un conjunto por su nombre
         private Conjunto Buscar(string nombre) =>
             gestion.Conjuntos.FirstOrDefault(c => c.Nombre == nombre);
 
-        // Nombre corto para mostrar: "Conjunto A" -> "A"
-        private static string Corto(string nombre)
-        {
-            string corto = nombre.Replace("Conjunto", "").Trim();
-            return corto.Length > 0 ? corto : nombre;
-        }
+        // Nombre corto para mostrar (el nombre del conjunto ya es corto: "1", "A"...)
+        private static string Corto(string nombre) => nombre;
 
-        // =====================================================================
         //  CHECKBOXES + CAJAS DINAMICOS (SunnyUI)
         //  Fila 1: un checkbox por conjunto
         //  Fila 2: una etiqueta + una caja por conjunto
-        // =====================================================================
 
         // Posicion de un control respecto a un ancestro (sin necesitar el handle)
         private Point PosicionEn(Control c, Control ancestro)
@@ -178,7 +171,7 @@ namespace Main
             yCaja = PosicionEn(txtRelacion1, padreRel).Y;
             alturaCaja = txtRelacion1.Height;
 
-            // etiquetas fijas "A", "B", "C" que estan encima de las cajas (son FoxBigLabel)
+            // etiquetas fijas "1", "2", "3" que estan encima de las cajas (son FoxBigLabel)
             yEtiqueta = PosicionEn(lblRelacion1, padreRel).Y;
 
             foreach (Control c in new Control[]
@@ -233,7 +226,7 @@ namespace Main
                 lbl.Size = new Size(ancho, 23);
                 lbl.Font = new Font(lbl.Font, FontStyle.Bold);
 
-                // --- caja de texto ---
+                // --- caja de texto (solo letras y numeros) ---
                 var txt = new Sunny.UI.UITextBox();
                 txt.Watermark = "Ej: " + (i + 1);
                 txt.Location = new Point(x, yCaja);
@@ -241,6 +234,7 @@ namespace Main
                 if (marcado && textosAntes.TryGetValue(c.Nombre, out string previo))
                     txt.Text = previo;
                 txt.Enabled = marcado;
+                EnlazarFiltro(txt);
 
                 padreRel.Controls.Add(chk);
                 padreRel.Controls.Add(lbl);
@@ -283,75 +277,84 @@ namespace Main
                 if (!par.Value.Checked) caja.Text = "";    // vacia las desmarcadas
             }
 
-            // con un solo conjunto marcado se escribe el par completo (ej. 1,2)
+            // con un solo conjunto marcado se escribe el par completo (ej. 1,2 o a,b)
             bool unico = ConjuntosMarcados().Count == 1;
             int num = 1;
             foreach (Conjunto conj in gestion.Conjuntos)
             {
                 if (cajas.TryGetValue(conj.Nombre, out Sunny.UI.UITextBox cj))
-                    cj.Watermark = (unico && checks[conj.Nombre].Checked) ? "Ej: 1,2" : "Ej: " + num;
+                    cj.Watermark = (unico && checks[conj.Nombre].Checked) ? "Ej: 1,a" : "Ej: " + num;
                 num++;
             }
 
             MostrarRelaciones();
         }
 
-        // =====================================================================
         //  ELEMENTOS
-        // =====================================================================
         private void MostrarElementos()
         {
-            uiListBox1.Items.Clear();
+            lbElements.Items.Clear();
             if (conjuntoActual == null) return;
 
             foreach (string el in conjuntoActual.Elementos)
-                uiListBox1.Items.Add(el);
+                lbElements.Items.Add(el);
         }
 
         private void btnAggElementos_Click(object sender, EventArgs e)
         {
             if (conjuntoActual == null)
             {
-                MessageBox.Show("Primero seleccione un conjunto.");
+                MessageBox.Show("Primero seleccione un conjunto.", "Información",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
             string texto = LeerTexto(txtElementos);
             if (string.IsNullOrWhiteSpace(texto))
             {
-                MessageBox.Show("Escriba los elementos, ej. 1,2,3,4");
+                MessageBox.Show("Escriba los elementos separados por coma, ej. 1,2,a,b", "Información",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            var nuevos = new List<int>();
-            foreach (string parte in texto.Split(','))
+            // se valida todo antes de agregar nada
+            var nuevos = new List<string>();
+            foreach (string parte in texto.Split(new[] { ',', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                if (int.TryParse(parte.Trim(), out int n))
-                    nuevos.Add(n);
-                else if (!string.IsNullOrWhiteSpace(parte))
+                string el = parte.Trim();
+                if (!Conjunto.EsValido(el))
                 {
-                    MessageBox.Show($"'{parte.Trim()}' no es un número válido.");
+                    MessageBox.Show($"'{el}' no es válido. Use solo letras y números (sin caracteres especiales).",
+                        "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
+                nuevos.Add(el);
             }
 
-            foreach (int n in nuevos)
-                if (!conjuntoActual.Elementos.Contains(n.ToString())) // sin duplicados
-                    conjuntoActual.AgregarElemento(n.ToString());
+            foreach (string el in nuevos)
+                conjuntoActual.AgregarElemento(el);   // ignora los repetidos
 
             MostrarElementos();
             txtElementos.Text = "";
         }
 
-        // =====================================================================
         //  AGREGAR / ELIMINAR CONJUNTOS
-        // =====================================================================
         private void btnAddcj_Click(object sender, EventArgs e)
         {
-            Conjunto nuevo = gestion.AddNewSet();
-            if (nuevo == null)
+            if (gestion.Lleno)
             {
                 MessageBox.Show($"Alcanzaste el máximo de {MaxConjuntos} conjuntos.", "Información",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            string nombre = PedirNombre(gestion.NombreLibre());
+            if (nombre == null) return;   // cancelado
+
+            Conjunto nuevo = gestion.AddNewSet(nombre);
+            if (nuevo == null)
+            {
+                MessageBox.Show("No se pudo crear el conjunto.", "Información",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
@@ -360,12 +363,63 @@ namespace Main
             RehacerChecks();   // aparece su checkbox, su etiqueta y su caja
         }
 
+        // Pide el nombre del conjunto (solo letras y numeros, sin repetir). null = cancelado
+        private string PedirNombre(string sugerido)
+        {
+            using (var dlg = new Form())
+            {
+                dlg.Text = "Nuevo conjunto";
+                dlg.FormBorderStyle = FormBorderStyle.FixedDialog;
+                dlg.StartPosition = FormStartPosition.CenterParent;
+                dlg.MaximizeBox = false;
+                dlg.MinimizeBox = false;
+                dlg.ShowInTaskbar = false;
+                dlg.ClientSize = new Size(330, 120);
+
+                var lbl = new Label { Text = "Nombre del conjunto (letras y números):", AutoSize = true, Location = new Point(12, 14) };
+                var txt = new TextBox { Text = sugerido, Location = new Point(15, 40), Width = 300, MaxLength = 8 };
+                var ok = new Button { Text = "Aceptar", DialogResult = DialogResult.OK, Location = new Point(145, 80), Size = new Size(80, 28) };
+                var cancelar = new Button { Text = "Cancelar", DialogResult = DialogResult.Cancel, Location = new Point(235, 80), Size = new Size(80, 28) };
+
+                txt.KeyPress += (s, ev) =>
+                {
+                    if (!char.IsControl(ev.KeyChar) && !char.IsLetterOrDigit(ev.KeyChar))
+                        ev.Handled = true;
+                };
+                dlg.Shown += (s, ev) => { txt.Focus(); txt.SelectAll(); };
+
+                dlg.Controls.AddRange(new Control[] { lbl, txt, ok, cancelar });
+                dlg.AcceptButton = ok;
+                dlg.CancelButton = cancelar;
+
+                while (true)
+                {
+                    if (dlg.ShowDialog(this) != DialogResult.OK) return null;
+
+                    string nombre = txt.Text.Trim();
+                    if (!Conjunto.EsValido(nombre))
+                    {
+                        MessageBox.Show("Use solo letras y números (sin espacios ni caracteres especiales).",
+                            "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        continue;
+                    }
+                    if (gestion.Existe(nombre))
+                    {
+                        MessageBox.Show($"Ya existe un conjunto llamado '{nombre}'.", "Información",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        continue;
+                    }
+                    return nombre;
+                }
+            }
+        }
+
         private void btnDeletecj_Click(object sender, EventArgs e)
         {
             if (conjuntoActual == null) return;
 
             var respuesta = MessageBox.Show(
-                $"¿Eliminar {conjuntoActual.Nombre} y todos sus elementos?",
+                $"¿Eliminar {conjuntoActual.Titulo} y todos sus elementos?",
                 "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (respuesta != DialogResult.Yes) return;
 
@@ -384,9 +438,7 @@ namespace Main
             RehacerChecks();
         }
 
-        // =====================================================================
         //  RELACIONES
-        // =====================================================================
 
         // crea el par con los valores escritos y lo guarda
         private void btnGenerarRelacion_Click(object sender, EventArgs e)
@@ -395,56 +447,63 @@ namespace Main
 
             if (marcados.Count < 1 || marcados.Count > 2)
             {
-                MessageBox.Show("Marque un conjunto (A con A) o dos conjuntos para relacionar.");
+                MessageBox.Show("Marque un conjunto (A con A) o dos conjuntos para relacionar.", "Información",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
             string c1 = marcados[0];
             string c2 = marcados.Count == 2 ? marcados[1] : marcados[0];
-            int x, y;
+            string x, y;
 
             if (marcados.Count == 2)
             {
-                // dos conjuntos: un numero en cada caja
-                if (!int.TryParse(TextoCaja(c1).Trim(), out x) ||
-                    !int.TryParse(TextoCaja(c2).Trim(), out y))
+                // dos conjuntos: un elemento en cada caja
+                x = TextoCaja(c1).Trim();
+                y = TextoCaja(c2).Trim();
+                if (!Conjunto.EsValido(x) || !Conjunto.EsValido(y))
                 {
-                    MessageBox.Show("Ingrese un numero valido en cada caja.");
+                    MessageBox.Show("Ingrese un elemento válido (letras o números) en cada caja.", "Información",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
             }
             else
             {
-                // un solo conjunto: el par completo en su caja, ej. 1,2
+                // un solo conjunto: el par completo en su caja, ej. 1,2 o a,b
                 string[] partes = TextoCaja(c1).Split(new[] { ',', ';', ' ' },
                                                       StringSplitOptions.RemoveEmptyEntries);
-                x = 0;
-                y = 0;
-                if (partes.Length != 2 || !int.TryParse(partes[0], out x) || !int.TryParse(partes[1], out y))
+                if (partes.Length != 2 || !Conjunto.EsValido(partes[0]) || !Conjunto.EsValido(partes[1]))
                 {
-                    MessageBox.Show("Escriba el par separado por coma, ej. 1,2");
+                    MessageBox.Show("Escriba el par separado por coma con letras o números, ej. 1,2 o a,b", "Información",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
+                x = partes[0];
+                y = partes[1];
             }
 
             Conjunto s1 = Buscar(c1);
             Conjunto s2 = Buscar(c2);
 
-            // cada numero tiene que pertenecer a su conjunto
-            if (!s1.Elementos.Contains(x.ToString()))
+            // cada elemento tiene que pertenecer a su conjunto
+            if (!s1.Elementos.Contains(x))
             {
-                MessageBox.Show($"{x} no es un elemento del conjunto {c1}.");
+                MessageBox.Show($"{x} no es un elemento del conjunto {c1}.", "Información",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-            if (!s2.Elementos.Contains(y.ToString()))
+            if (!s2.Elementos.Contains(y))
             {
-                MessageBox.Show($"{y} no es un elemento del conjunto {c2}.");
+                MessageBox.Show($"{y} no es un elemento del conjunto {c2}.", "Información",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
             if (relaciones.Contains((c1, x, c2, y))) // evita pares repetidos
             {
-                MessageBox.Show("Ese par ya fue agregado.");
+                MessageBox.Show("Ese par ya fue agregado.", "Información",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
@@ -494,7 +553,7 @@ namespace Main
 
                 foreach (var r in relaciones)
                     if (r.Item1 == n1 && r.Item3 == n2)
-                        rel.Agregar(r.Item2.ToString(), r.Item4.ToString(), out _);
+                        rel.Agregar(r.Item2, r.Item4, out _);
 
                 lista.Add(rel);
             }
@@ -522,9 +581,7 @@ namespace Main
                 .ToList();
         }
 
-        // =====================================================================
         //  UTILIDADES
-        // =====================================================================
 
         // lee el texto real del control
         private string LeerTexto(Control control)
@@ -556,9 +613,23 @@ namespace Main
                 EnlazarEnter(hijo);
         }
 
-        // ---------------------------------------------------------------------
+        // Solo letras, numeros y separadores (coma, punto y coma, espacio); bloquea el resto al teclear
+        private static void SoloAlfanumerico(object sender, KeyPressEventArgs e)
+        {
+            char c = e.KeyChar;
+            if (char.IsControl(c) || char.IsLetterOrDigit(c) || c == ',' || c == ';' || c == ' ') return;
+            e.Handled = true;
+        }
+
+        private static void EnlazarFiltro(Control control)
+        {
+            control.KeyPress -= SoloAlfanumerico;
+            control.KeyPress += SoloAlfanumerico;
+            foreach (Control hijo in control.Controls)
+                EnlazarFiltro(hijo);
+        }
+
         //  Paneles grandes: se encuentran buscando sus titulos
-        // ---------------------------------------------------------------------
         private Control BuscarPorTexto(Control raiz, string inicio)
         {
             foreach (Control hijo in raiz.Controls)
@@ -593,7 +664,8 @@ namespace Main
             if (pDigrafo == null || pMatriz == null || pProp == null)
             {
                 MessageBox.Show("No encontre los paneles Digrafo, Matriz o Propiedades.\n" +
-                                "Revise que sus titulos empiecen con esas palabras.");
+                                "Revise que sus titulos empiecen con esas palabras.", "Información",
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return false;
             }
             return true;
@@ -628,27 +700,6 @@ namespace Main
             return (PictureBox)sp.Controls["pbAuto"];
         }
 
-        private RichTextBox TextoEn(Control cont)
-        {
-            int top = 45;
-            var rtb = cont.Controls.OfType<RichTextBox>().FirstOrDefault(p => p.Name == "rtbAuto");
-            if (rtb == null)
-            {
-                rtb = new RichTextBox();
-                rtb.Name = "rtbAuto";
-                rtb.ReadOnly = true;
-                rtb.BorderStyle = BorderStyle.None;
-                rtb.BackColor = Color.White;
-                rtb.Font = new Font("Segoe UI", 10f);
-                rtb.Location = new Point(5, top);
-                rtb.Size = new Size(cont.Width - 10, cont.Height - top - 5);
-                rtb.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-                cont.Controls.Add(rtb);
-                rtb.BringToFront();
-            }
-            return rtb;
-        }
-
         private void MostrarImagen(PictureBox pb, Bitmap nueva)
         {
             Image vieja = pb.Image;
@@ -656,7 +707,6 @@ namespace Main
             if (vieja != null) vieja.Dispose();
         }
 
-       
         private static Size AreaUtil(PictureBox pb)
         {
             Size s = pb.Parent.Size;
@@ -664,7 +714,6 @@ namespace Main
                             Math.Max(s.Height - SystemInformation.HorizontalScrollBarHeight - 4, 150));
         }
 
-        
         private void PrepararZoom(Control pDigrafo, PictureBox pb)
         {
             if (panelDigrafoRef != null) return;
@@ -717,7 +766,6 @@ namespace Main
             pb.MouseUp += (s, ev) => { arrastrando = false; pb.Cursor = Cursors.Default; };
         }
 
-        
         private void CambiarZoom(double nuevo)
         {
             nuevo = Math.Max(0.5, Math.Min(4.0, nuevo));
@@ -740,15 +788,12 @@ namespace Main
 
         private void DibujarMatrizYPropiedades(Control pMatriz, Control pProp)
         {
-            
             PictureBox pbM = ImagenEn(pMatriz);
             Size aM = AreaUtil(pbM);
             MostrarImagen(pbM, Grafica.Matriz(ConstruirGrupos(), relaciones, aM.Width, aM.Height));
-            // MostrarImagen(ImagenEn(pMatriz), Grafica.Matriz(ConstruirGrupos(), relaciones));
 
             PictureBox pbP = ImagenEn(pProp);
             MostrarImagen(pbP, Grafica.Propiedades(ConstruirRelaciones(), AreaUtil(pbP).Width));
-            // TextoEn(pProp).Text = Multi.Propiedades(ConstruirRelaciones());
         }
 
         private void DibujarDigrafo(Control pDigrafo)
@@ -756,10 +801,6 @@ namespace Main
             PictureBox pb = ImagenEn(pDigrafo);
             PrepararZoom(pDigrafo, pb);
             Size a = AreaUtil(pb);
-            // Size vp = pb.Parent.ClientSize;
-            // int w = Math.Max(vp.Width - SystemInformation.VerticalScrollBarWidth - 2, 300);
-            // int h = Math.Max(vp.Height - 40, 280);
-            // MostrarImagen(pb, Grafica.Digrafo(ConstruirGrupos(), relaciones, w, h));
             MostrarImagen(pb, Grafica.Digrafo(ConstruirGrupos(), relaciones, a.Width, a.Height, (float)zoomDigrafo));
         }
 
@@ -771,14 +812,13 @@ namespace Main
             DibujarDigrafo(pDigrafo);
         }
 
-        // ---------------------------------------------------------------------
         //  BOTONES: Matriz / Diagrama / Exportar
-        // ---------------------------------------------------------------------
         private void btnMatriz_Click(object sender, EventArgs e)
         {
             if (relaciones.Count == 0)
             {
-                MessageBox.Show("Primero genere una relacion.");
+                MessageBox.Show("Primero genere una relacion.", "Información",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             if (!ObtenerPaneles(out Control pDigrafo, out Control pMatriz, out Control pProp)) return;
@@ -789,7 +829,8 @@ namespace Main
         {
             if (relaciones.Count == 0)
             {
-                MessageBox.Show("Primero genere una relacion.");
+                MessageBox.Show("Primero genere una relacion.", "Información",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             if (!ObtenerPaneles(out Control pDigrafo, out Control pMatriz, out Control pProp)) return;
@@ -800,7 +841,8 @@ namespace Main
         {
             if (relaciones.Count == 0)
             {
-                MessageBox.Show("Primero genere una relacion.");
+                MessageBox.Show("Primero genere una relacion.", "Información",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
@@ -819,23 +861,37 @@ namespace Main
                     using (Bitmap m = Grafica.Matriz(grupos, relaciones))
                         m.Save(System.IO.Path.Combine(dlg.SelectedPath, "matriz.png"),
                                System.Drawing.Imaging.ImageFormat.Png);
-                    MessageBox.Show("Imagenes guardadas en:\n" + dlg.SelectedPath);
+                    MessageBox.Show("Imagenes guardadas en:\n" + dlg.SelectedPath, "Información",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("No se pudo guardar: " + ex.Message);
+                    MessageBox.Show("No se pudo guardar: " + ex.Message, "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
 
-        // ---------------------------------------------------------------------
         //  Handlers vacios que el diseñador puede tener enlazados (no borrar
         //  a menos que tambien los quites desde el diseñador)
-        // ---------------------------------------------------------------------
         private void uiPanel1_Click(object sender, EventArgs e) { }
         private void uiPanel1_Click_1(object sender, EventArgs e) { }
         private void uiPanel3_Click(object sender, EventArgs e) { }
         private void uiPanel4_Click(object sender, EventArgs e) { }
         private void btnGenerarRelacion_Click_1(object sender, EventArgs e) { }
+
+        private void btnEliminarElementos_Click(object sender, EventArgs e)
+        {
+            if (conjuntoActual == null) return;
+            if (lbElements.SelectedItem == null) return;
+
+            conjuntoActual.EliminarElemento(lbElements.SelectedItem.ToString());
+            MostrarElementos();
+        }
+
+        private void Reiniciar_Click(object sender, EventArgs e)
+        {
+            Application.Restart();
+        }
     }
 }

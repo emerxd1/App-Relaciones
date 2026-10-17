@@ -30,6 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             PnlElementos = new Sunny.UI.UIPanel();
+            btnEliminarElementos = new Sunny.UI.UIButton();
             lblElementos = new ReaLTaiizor.Controls.FoxBigLabel();
             foxBigLabel2 = new ReaLTaiizor.Controls.FoxBigLabel();
             txtElementos = new ReaLTaiizor.Controls.BigTextBox();
@@ -56,7 +57,7 @@
             btnAddcj = new ReaLTaiizor.Controls.Button();
             uiPanel1 = new Sunny.UI.UIPanel();
             PanelDigrafo = new ReaLTaiizor.Controls.FoxBigLabel();
-            uiListBox1 = new Sunny.UI.UIListBox();
+            lbElements = new Sunny.UI.UIListBox();
             uiPanel2 = new Sunny.UI.UIPanel();
             foxBigLabel8 = new ReaLTaiizor.Controls.FoxBigLabel();
             uiListBox2 = new Sunny.UI.UIListBox();
@@ -69,6 +70,7 @@
             btnDiagrama = new ReaLTaiizor.Controls.Button();
             btnMatriz = new ReaLTaiizor.Controls.Button();
             btnExportar = new Sunny.UI.UIButton();
+            Reiniciar = new Sunny.UI.UIButton();
             PnlElementos.SuspendLayout();
             PnlRelacion.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
@@ -81,6 +83,7 @@
             // 
             // PnlElementos
             // 
+            PnlElementos.Controls.Add(btnEliminarElementos);
             PnlElementos.Controls.Add(lblElementos);
             PnlElementos.Controls.Add(foxBigLabel2);
             PnlElementos.Controls.Add(txtElementos);
@@ -98,6 +101,28 @@
             PnlElementos.TextAlignment = ContentAlignment.MiddleCenter;
             PnlElementos.Click += uiPanel1_Click;
             // 
+            // btnEliminarElementos
+            // 
+            btnEliminarElementos.FillColor = Color.White;
+            btnEliminarElementos.FillColor2 = Color.FromArgb(59, 91, 219);
+            btnEliminarElementos.FillHoverColor = Color.FromArgb(192, 0, 0);
+            btnEliminarElementos.FillPressColor = Color.Silver;
+            btnEliminarElementos.FillSelectedColor = Color.FromArgb(192, 0, 0);
+            btnEliminarElementos.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnEliminarElementos.ForeColor = Color.FromArgb(59, 91, 219);
+            btnEliminarElementos.Location = new Point(18, 139);
+            btnEliminarElementos.MinimumSize = new Size(1, 1);
+            btnEliminarElementos.Name = "btnEliminarElementos";
+            btnEliminarElementos.RectColor = Color.FromArgb(59, 91, 219);
+            btnEliminarElementos.RectHoverColor = Color.FromArgb(192, 0, 0);
+            btnEliminarElementos.RectPressColor = Color.Silver;
+            btnEliminarElementos.RectSelectedColor = Color.FromArgb(192, 0, 0);
+            btnEliminarElementos.Size = new Size(322, 31);
+            btnEliminarElementos.TabIndex = 6;
+            btnEliminarElementos.Text = "Eliminar";
+            btnEliminarElementos.TipsFont = new Font("Microsoft Sans Serif", 9F);
+            btnEliminarElementos.Click += btnEliminarElementos_Click;
+            // 
             // lblElementos
             // 
             lblElementos.BackColor = Color.Transparent;
@@ -105,7 +130,7 @@
             lblElementos.ForeColor = Color.FromArgb(76, 88, 100);
             lblElementos.Line = ReaLTaiizor.Controls.FoxBigLabel.Direction.Top;
             lblElementos.LineColor = Color.White;
-            lblElementos.Location = new Point(18, 44);
+            lblElementos.Location = new Point(18, 36);
             lblElementos.Name = "lblElementos";
             lblElementos.Size = new Size(258, 18);
             lblElementos.TabIndex = 5;
@@ -120,7 +145,7 @@
             foxBigLabel2.LineColor = Color.White;
             foxBigLabel2.Location = new Point(13, 7);
             foxBigLabel2.Name = "foxBigLabel2";
-            foxBigLabel2.Size = new Size(140, 35);
+            foxBigLabel2.Size = new Size(112, 31);
             foxBigLabel2.TabIndex = 4;
             foxBigLabel2.Text = "Elementos";
             // 
@@ -130,7 +155,7 @@
             txtElementos.Font = new Font("Tahoma", 11F);
             txtElementos.ForeColor = Color.DimGray;
             txtElementos.Image = null;
-            txtElementos.Location = new Point(18, 68);
+            txtElementos.Location = new Point(18, 55);
             txtElementos.MaxLength = 32767;
             txtElementos.Multiline = false;
             txtElementos.Name = "txtElementos";
@@ -151,7 +176,7 @@
             btnAggElementos.Image = null;
             btnAggElementos.ImageAlign = ContentAlignment.MiddleLeft;
             btnAggElementos.InactiveColor = Color.FromArgb(59, 91, 219);
-            btnAggElementos.Location = new Point(15, 123);
+            btnAggElementos.Location = new Point(18, 102);
             btnAggElementos.Name = "btnAggElementos";
             btnAggElementos.PressedBorderColor = Color.FromArgb(165, 37, 37);
             btnAggElementos.PressedColor = Color.FromArgb(165, 37, 37);
@@ -445,7 +470,7 @@
             btnDeletecj.FillSelectedColor = Color.FromArgb(192, 0, 0);
             btnDeletecj.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnDeletecj.ForeColor = Color.FromArgb(59, 91, 219);
-            btnDeletecj.Location = new Point(222, 116);
+            btnDeletecj.Location = new Point(224, 102);
             btnDeletecj.MinimumSize = new Size(1, 1);
             btnDeletecj.Name = "btnDeletecj";
             btnDeletecj.RectColor = Color.FromArgb(59, 91, 219);
@@ -522,30 +547,29 @@
             PanelDigrafo.TabIndex = 4;
             PanelDigrafo.Text = "Digrafo";
             // 
-            // uiListBox1
+            // lbElements
             // 
-            uiListBox1.Font = new Font("Microsoft Sans Serif", 12F);
-            uiListBox1.HoverColor = Color.FromArgb(80, 160, 255);
-            uiListBox1.Items.AddRange(new object[] { "1", "2", "3", "4", "5" });
-            uiListBox1.ItemSelectForeColor = Color.White;
-            uiListBox1.Location = new Point(18, 72);
-            uiListBox1.Margin = new Padding(4, 5, 4, 5);
-            uiListBox1.MinimumSize = new Size(1, 1);
-            uiListBox1.Name = "uiListBox1";
-            uiListBox1.Padding = new Padding(5);
-            uiListBox1.Radius = 10;
-            uiListBox1.RectColor = Color.FromArgb(59, 91, 219);
-            uiListBox1.ShowText = false;
-            uiListBox1.Size = new Size(263, 138);
-            uiListBox1.TabIndex = 5;
-            uiListBox1.Text = "uiListBox1";
+            lbElements.Font = new Font("Microsoft Sans Serif", 12F);
+            lbElements.HoverColor = Color.FromArgb(80, 160, 255);
+            lbElements.ItemSelectForeColor = Color.White;
+            lbElements.Location = new Point(18, 72);
+            lbElements.Margin = new Padding(4, 5, 4, 5);
+            lbElements.MinimumSize = new Size(1, 1);
+            lbElements.Name = "lbElements";
+            lbElements.Padding = new Padding(5);
+            lbElements.Radius = 10;
+            lbElements.RectColor = Color.FromArgb(59, 91, 219);
+            lbElements.ShowText = false;
+            lbElements.Size = new Size(263, 138);
+            lbElements.TabIndex = 5;
+            lbElements.Text = "uiListBox1";
             // 
             // uiPanel2
             // 
             uiPanel2.Controls.Add(foxBigLabel8);
             uiPanel2.Controls.Add(uiListBox2);
             uiPanel2.Controls.Add(foxBigLabel3);
-            uiPanel2.Controls.Add(uiListBox1);
+            uiPanel2.Controls.Add(lbElements);
             uiPanel2.Controls.Add(foxBigLabel6);
             uiPanel2.FillColor = Color.White;
             uiPanel2.Font = new Font("Segoe UI Symbol", 9.75F);
@@ -578,7 +602,6 @@
             // 
             uiListBox2.Font = new Font("Microsoft Sans Serif", 12F);
             uiListBox2.HoverColor = Color.FromArgb(80, 160, 255);
-            uiListBox2.Items.AddRange(new object[] { "1", "2", "3", "4", "5" });
             uiListBox2.ItemSelectForeColor = Color.White;
             uiListBox2.Location = new Point(18, 246);
             uiListBox2.Margin = new Padding(4, 5, 4, 5);
@@ -748,12 +771,35 @@
             btnExportar.TipsFont = new Font("Microsoft Sans Serif", 9F);
             btnExportar.Click += btnExportar_Click;
             // 
+            // Reiniciar
+            // 
+            Reiniciar.FillColor = Color.White;
+            Reiniciar.FillColor2 = Color.FromArgb(59, 91, 219);
+            Reiniciar.FillHoverColor = Color.FromArgb(192, 0, 0);
+            Reiniciar.FillPressColor = Color.Silver;
+            Reiniciar.FillSelectedColor = Color.FromArgb(192, 0, 0);
+            Reiniciar.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            Reiniciar.ForeColor = Color.FromArgb(59, 91, 219);
+            Reiniciar.Location = new Point(656, 17);
+            Reiniciar.MinimumSize = new Size(1, 1);
+            Reiniciar.Name = "Reiniciar";
+            Reiniciar.RectColor = Color.FromArgb(59, 91, 219);
+            Reiniciar.RectHoverColor = Color.FromArgb(192, 0, 0);
+            Reiniciar.RectPressColor = Color.Silver;
+            Reiniciar.RectSelectedColor = Color.FromArgb(192, 0, 0);
+            Reiniciar.Size = new Size(115, 31);
+            Reiniciar.TabIndex = 6;
+            Reiniciar.Text = "Reiniciar";
+            Reiniciar.TipsFont = new Font("Microsoft Sans Serif", 9F);
+            Reiniciar.Click += Reiniciar_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
             BackColor = Color.White;
             ClientSize = new Size(1350, 749);
+            Controls.Add(Reiniciar);
             Controls.Add(btnExportar);
             Controls.Add(btnMatriz);
             Controls.Add(btnDiagrama);
@@ -784,7 +830,6 @@
         }
 
         #endregion
-        private ElipseControl.ElipseControl elipseControl1;
         private Sunny.UI.UIPanel PnlElementos;
         private ReaLTaiizor.Controls.Button btnAggElementos;
         private ReaLTaiizor.Controls.BigTextBox txtElementos;
@@ -816,7 +861,7 @@
         private ReaLTaiizor.Controls.FoxBigLabel PanelPropierties;
         private ReaLTaiizor.Controls.Button btnDiagrama;
         private ReaLTaiizor.Controls.Button btnMatriz;
-        private Sunny.UI.UIListBox uiListBox1;
+        private Sunny.UI.UIListBox lbElements;
         private ReaLTaiizor.Controls.FoxBigLabel foxBigLabel3;
         private ReaLTaiizor.Controls.FoxBigLabel foxBigLabel8;
         private Sunny.UI.UIListBox uiListBox2;
@@ -837,5 +882,7 @@
         private ReaLTaiizor.Controls.FoxBigLabel lblRelacion1;
         private ReaLTaiizor.Controls.FoxBigLabel foxBigLabel10;
         private ReaLTaiizor.Controls.HopeCheckBox CheckC;
+        private Sunny.UI.UIButton btnEliminarElementos;
+        private Sunny.UI.UIButton Reiniciar;
     }
 }
