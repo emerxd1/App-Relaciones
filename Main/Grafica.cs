@@ -74,10 +74,13 @@ namespace Main
         // ------------------------------------------------------------------
         public static Bitmap Digrafo(IReadOnlyList<GrupoGrafica> grupos,
                                      IReadOnlyList<(string, int, string, int)> pares,
-                                     int ancho, int alto)
+                                     int ancho, int alto, float zoom = 1f)   // NUEVO: zoom
         {
             int k = grupos.Count;
             if (k == 0) return new Bitmap(Math.Max(ancho, 1), Math.Max(alto, 1));
+
+            int anchoU = (int)(ancho / zoom);   // NUEVO: tamaño en unidades de dibujo
+            int altoU = (int)(alto / zoom);     // NUEVO
 
             const float nodoR = 20f;
 
@@ -113,8 +116,10 @@ namespace Main
                 maxY = Math.Max(maxY, centros[i].Y + burbuja[i]);
             }
             const float margen = 36f;
-            int w = Math.Max(ancho, (int)Math.Ceiling(maxX - minX + 2 * margen));
-            int h = Math.Max(alto, (int)Math.Ceiling(maxY - minY + 2 * margen));
+            // int w = Math.Max(ancho, (int)Math.Ceiling(maxX - minX + 2 * margen));
+            // int h = Math.Max(alto, (int)Math.Ceiling(maxY - minY + 2 * margen));
+            int w = Math.Max(anchoU, (int)Math.Ceiling(maxX - minX + 2 * margen));   // NUEVO
+            int h = Math.Max(altoU, (int)Math.Ceiling(maxY - minY + 2 * margen));    // NUEVO
             float offX = w / 2f - (minX + maxX) / 2f;
             float offY = h / 2f - (minY + maxY) / 2f;
             for (int i = 0; i < k; i++)
@@ -144,9 +149,11 @@ namespace Main
                 }
             }
 
-            var bmp = new Bitmap(w, h);
+            // var bmp = new Bitmap(w, h);
+            var bmp = new Bitmap((int)(w * zoom), (int)(h * zoom));   // NUEVO
             using var g = Graphics.FromImage(bmp);
             Configurar(g);
+            g.ScaleTransform(zoom, zoom);                             // NUEVO
 
             using var fPill = new Font("Segoe UI", 10f, FontStyle.Bold);
             using var centro = Centro();
@@ -226,11 +233,18 @@ namespace Main
             var punta = new PointF(p2.X - uf.X * (nodoR + 3f), p2.Y - uf.Y * (nodoR + 3f));
             var finLinea = new PointF(punta.X - uf.X * 11f, punta.Y - uf.Y * 11f);
 
+            // NUEVO: los puntos de control se alinean con la salida y la llegada,
+            // asi la curva entra exactamente en la direccion de la punta
+            float largoC = dist * 0.3f;
+            var cc1 = new PointF(ini.X + u0.X * largoC, ini.Y + u0.Y * largoC);
+            var cc2 = new PointF(finLinea.X - uf.X * largoC, finLinea.Y - uf.Y * largoC);
+
             using (var pen = new Pen(Color.FromArgb(200, color), 2.2f))
             {
                 pen.StartCap = LineCap.Round;
                 pen.LineJoin = LineJoin.Round;
-                g.DrawBezier(pen, ini, c1, c2, finLinea);
+                // g.DrawBezier(pen, ini, c1, c2, finLinea);
+                g.DrawBezier(pen, ini, cc1, cc2, finLinea);   // NUEVO
             }
 
             PuntaFlecha(g, punta, uf, color);
@@ -270,11 +284,15 @@ namespace Main
             PointF uf = Unitario(fin.X - c2.X, fin.Y - c2.Y);
             var finLinea = new PointF(fin.X - uf.X * 11f, fin.Y - uf.Y * 11f);
 
+            // NUEVO: el lazo llega en la direccion de la punta
+            var cc2 = new PointF(finLinea.X - uf.X * nodoR * 1.5f, finLinea.Y - uf.Y * nodoR * 1.5f);
+
             using (var pen = new Pen(Color.FromArgb(200, color), 2.2f))
             {
                 pen.StartCap = LineCap.Round;
                 pen.LineJoin = LineJoin.Round;
-                g.DrawBezier(pen, ini, c1, c2, finLinea);
+                // g.DrawBezier(pen, ini, c1, c2, finLinea);
+                g.DrawBezier(pen, ini, c1, cc2, finLinea);   // NUEVO
             }
             PuntaFlecha(g, fin, uf, color);
         }
@@ -283,7 +301,8 @@ namespace Main
         //  MATRIZ DE ADYACENCIA (una sola, con todos los elementos)
         // ------------------------------------------------------------------
         public static Bitmap Matriz(IReadOnlyList<GrupoGrafica> grupos,
-                                    IReadOnlyList<(string, int, string, int)> pares)
+                                    IReadOnlyList<(string, int, string, int)> pares,
+                                    int ancho = 0, int alto = 0)   // NUEVO: tamaño del panel
         {
             // una fila/columna por cada elemento de cada conjunto
             var items = new List<(int g, string clave, string etiqueta)>();
@@ -305,6 +324,17 @@ namespace Main
             int filaW = cell + 14;                           // ancho de las etiquetas de fila
             const int colH = 28;                             // alto de las etiquetas de columna
 
+            // NUEVO: si se conoce el panel, la celda crece para llenarlo (hasta 110 px)
+            if (ancho > 0 && alto > 0)
+            {
+                int kk = grupos.Count;
+                int porAncho = (ancho - 2 * margen - 22 - (kk - 1) * gap) / (N + 1);
+                int porAlto = (alto - 2 * margen - colH - 8 - (kk - 1) * gap) / N;
+                cell = Math.Max(cell, Math.Min(110, Math.Min(porAncho, porAlto)));
+                filaW = cell + 14;
+            }
+            float esc = Math.Max(1f, cell / 44f);   // NUEVO: escala de las letras
+
             int x0 = margen + filaW + 8;
             int y0 = margen + colH + 8;
 
@@ -323,9 +353,12 @@ namespace Main
             using var g = Graphics.FromImage(bmp);
             Configurar(g);
 
-            using var fBold = new Font("Segoe UI", 11f, FontStyle.Bold);
-            using var fNormal = new Font("Segoe UI", 10f);
-            using var fEtiqueta = new Font("Segoe UI", 9f, FontStyle.Bold);
+            // using var fBold = new Font("Segoe UI", 11f, FontStyle.Bold);
+            // using var fNormal = new Font("Segoe UI", 10f);
+            // using var fEtiqueta = new Font("Segoe UI", 9f, FontStyle.Bold);
+            using var fBold = new Font("Segoe UI", 11f * esc, FontStyle.Bold);                      // NUEVO
+            using var fNormal = new Font("Segoe UI", 10f * esc);                                    // NUEVO
+            using var fEtiqueta = new Font("Segoe UI", 9f * Math.Min(esc, 1.4f), FontStyle.Bold);   // NUEVO
             using var fEsquina = new Font("Segoe UI", 8f);
             using var brGris = new SolidBrush(TextoGris);
             using var centro = Centro();
@@ -372,6 +405,237 @@ namespace Main
             }
 
             return bmp;
+        }
+
+        // ------------------------------------------------------------------
+        //  PROPIEDADES (NUEVO): tarjetas con Si / No + mini digrafo y definicion
+        //  (solo reflexiva, simetrica, antisimetrica y transitiva)
+        // ------------------------------------------------------------------
+        private static readonly Color MiniTinta = Color.FromArgb(30, 40, 70);
+
+        public static Bitmap Propiedades(List<Relacion> rels, int ancho)
+        {
+            ancho = Math.Max(ancho, 260);
+            const int cardH = 116, gap = 6, titH = 30, bloqueGap = 12, notaH = 48;
+            int columnas = ancho >= 560 ? 2 : 1;
+
+            if (rels.Count == 0)
+            {
+                var vacio = new Bitmap(ancho, 60);
+                using var gv = Graphics.FromImage(vacio);
+                Configurar(gv);
+                using var fv = new Font("Segoe UI", 13f, GraphicsUnit.Pixel);
+                gv.DrawString("Aún no hay relaciones.", fv, Brushes.Gray, 8, 8);
+                return vacio;
+            }
+
+            int alto = 8;
+            foreach (var r in rels)
+                alto += titH + (r.EsEndo ? ((4 + columnas - 1) / columnas) * (cardH + gap) : notaH) + bloqueGap;
+
+            var bmp = new Bitmap(ancho, alto);
+            using var g = Graphics.FromImage(bmp);
+            Configurar(g);
+
+            using var fTit = new Font("Segoe UI", 15f, FontStyle.Bold, GraphicsUnit.Pixel);
+            using var fNom = new Font("Segoe UI", 13f, FontStyle.Bold, GraphicsUnit.Pixel);
+            using var fDesc = new Font("Segoe UI", 12f, GraphicsUnit.Pixel);
+            using var fPil = new Font("Segoe UI", 12f, FontStyle.Bold, GraphicsUnit.Pixel);
+            using var fNota = new Font("Segoe UI", 12f, GraphicsUnit.Pixel);
+            using var fMini = new Font("Segoe UI", 9f, FontStyle.Bold, GraphicsUnit.Pixel);
+            using var bTit = new SolidBrush(Color.FromArgb(30, 34, 50));
+            using var bNom = new SolidBrush(Color.FromArgb(60, 66, 85));
+            using var bDesc = new SolidBrush(Color.FromArgb(100, 108, 125));
+            using var bCard = new SolidBrush(Color.FromArgb(248, 249, 252));
+            using var pCard = new Pen(Color.FromArgb(225, 229, 238));
+            using var centro = Centro();
+
+            int y = 8, margen = 8;
+            int cw = (ancho - 2 * margen - (columnas - 1) * gap) / columnas;
+
+            foreach (var r in rels)
+            {
+                string titulo = r.EsEndo
+                    ? (rels.Count > 1 ? "Propiedades de R sobre " + r.NombreDom : "Propiedades de R")
+                    : "R: " + r.NombreDom + " → " + r.NombreCod;
+                g.DrawString(titulo, fTit, bTit, margen, y);
+                y += titH;
+
+                if (!r.EsEndo)
+                {
+                    g.DrawString("No aplica: solo se estudian en un conjunto consigo mismo.", fNota, Brushes.Gray,
+                        new RectangleF(margen, y, ancho - 2 * margen, notaH));
+                    y += notaH + bloqueGap;
+                    continue;
+                }
+
+                // cada propiedad trae su resultado y el porque (Detalle: el contraejemplo o la razon)
+                var props = new (string nombre, Analisis.Res res, string desc)[]
+                {
+                    ("Reflexiva", Analisis.Reflexiva(r), "Todo vértice tiene un lazo: (a, a) ∈ R."),
+                    ("Simétrica", Analisis.Simetrica(r), "Cada flecha a→b tiene su regreso b→a."),
+                    ("Antisimétrica", Analisis.Antisimetrica(r), "Nunca hay ida y vuelta entre vértices distintos."),
+                    ("Transitiva", Analisis.Transitiva(r), "Si hay a→b y b→c, entonces existe a→c.")
+                };
+
+                for (int i = 0; i < props.Length; i++)
+                {
+                    int x = margen + (i % columnas) * (cw + gap);
+                    int yy = y + (i / columnas) * (cardH + gap);
+
+                    using (var path = Redondeado(new RectangleF(x, yy, cw, cardH), 8))
+                    {
+                        g.FillPath(bCard, path);
+                        g.DrawPath(pCard, path);
+                    }
+
+                    g.DrawString(props[i].nombre, fNom, bNom, x + 12, yy + 11);
+                    Pildora(g, fPil, centro, x + cw - 64, yy + 8, props[i].res.Cumple);
+
+                    // fila 2: descripcion de la propiedad (sin imagenes)
+                    g.DrawString(props[i].desc, fDesc, bDesc,
+                        new RectangleF(x + 12, yy + 36, cw - 24, 34));
+
+                    // fila 3: el porque (razon o contraejemplo)
+                    g.DrawLine(pCard, x + 12, yy + 72, x + cw - 12, yy + 72);
+                    Color tintaRaz = props[i].res.Cumple ? Color.FromArgb(18, 120, 70) : Color.FromArgb(160, 60, 60);
+                    using (var bRaz = new SolidBrush(tintaRaz))
+                        g.DrawString("Porque " + props[i].res.Detalle, fDesc, bRaz,
+                            new RectangleF(x + 12, yy + 76, cw - 24, cardH - 80));
+                }
+                y += ((props.Length + columnas - 1) / columnas) * (cardH + gap) + bloqueGap;
+            }
+            return bmp;
+        }
+
+        // Mini digrafo de ejemplo de cada propiedad (0 reflexiva, 1 simetrica, 2 antisimetrica, 3 transitiva)
+        private static void MiniDiagrama(Graphics g, int tipo, float ox, float oy, Font f, StringFormat centro, bool cumple)
+        {
+            const float r = 8f;
+            // NUEVO: en rojo cuando la propiedad no se cumple
+            Color tinta = cumple ? MiniTinta : Color.FromArgb(200, 50, 50);
+            Color borde = cumple ? Color.FromArgb(18, 140, 130) : Color.FromArgb(200, 50, 50);
+            Color fondo = cumple ? Color.FromArgb(226, 244, 241) : Color.FromArgb(253, 232, 232);
+            Color texto = cumple ? Color.FromArgb(24, 60, 70) : Color.FromArgb(150, 30, 30);
+            PointF P(float px, float py) => new PointF(ox + px, oy + py);
+            PointF a, b, c;
+
+            switch (tipo)
+            {
+                case 0: // reflexiva: lazo en cada vertice
+                    a = P(14, 34); b = P(48, 34); c = P(82, 34);
+                    MiniFlecha(g, a, b, r, 0, tinta);
+                    MiniLazo(g, a, r, tinta); MiniLazo(g, b, r, tinta); MiniLazo(g, c, r, tinta);
+                    break;
+                case 1: // simetrica: ida y vuelta
+                    a = P(14, 26); b = P(48, 26); c = P(82, 26);
+                    MiniFlecha(g, a, b, r, 12, tinta); MiniFlecha(g, b, a, r, 12, tinta);
+                    MiniFlecha(g, b, c, r, 12, tinta); MiniFlecha(g, c, b, r, 12, tinta);
+                    break;
+                case 2: // antisimetrica: solo ida
+                    a = P(48, 10); b = P(20, 42); c = P(76, 42);
+                    MiniFlecha(g, a, b, r, 0, tinta); MiniFlecha(g, a, c, r, 0, tinta);
+                    break;
+                default: // transitiva: a->b, b->c y el atajo a->c
+                    b = P(48, 10); a = P(14, 42); c = P(82, 42);
+                    MiniFlecha(g, a, b, r, 0, tinta); MiniFlecha(g, b, c, r, 0, tinta); MiniFlecha(g, a, c, r, 0, tinta);
+                    break;
+            }
+
+            MiniNodo(g, a, "a", f, centro, borde, fondo, texto);
+            MiniNodo(g, b, "b", f, centro, borde, fondo, texto);
+            MiniNodo(g, c, "c", f, centro, borde, fondo, texto);
+        }
+
+        private static void MiniNodo(Graphics g, PointF c, string t, Font f, StringFormat centro, Color borde, Color fondo, Color texto)
+        {
+            const float r = 8f;
+            using (var br = new SolidBrush(fondo))
+                g.FillEllipse(br, c.X - r, c.Y - r, 2 * r, 2 * r);
+            using (var pen = new Pen(borde, 1.6f))
+                g.DrawEllipse(pen, c.X - r, c.Y - r, 2 * r, 2 * r);
+            using (var br = new SolidBrush(texto))
+                g.DrawString(t, f, br, new RectangleF(c.X - r, c.Y - r, 2 * r, 2 * r), centro);
+        }
+
+        // Flecha de borde a borde de nodo; curva != 0 la curva hacia un lado
+        private static void MiniFlecha(Graphics g, PointF a, PointF b, float r, float curva, Color tinta)
+        {
+            float dx = b.X - a.X, dy = b.Y - a.Y;
+            float len = (float)Math.Sqrt(dx * dx + dy * dy);
+            if (len < 1f) return;
+
+            var ctrl = new PointF((a.X + b.X) / 2f - dy / len * curva, (a.Y + b.Y) / 2f + dx / len * curva);
+            PointF u0 = Unitario(ctrl.X - a.X, ctrl.Y - a.Y);
+            PointF u1 = Unitario(b.X - ctrl.X, b.Y - ctrl.Y);
+
+            var ini = new PointF(a.X + u0.X * r, a.Y + u0.Y * r);
+            var punta = new PointF(b.X - u1.X * r, b.Y - u1.Y * r);
+            var fin = new PointF(punta.X - u1.X * 5f, punta.Y - u1.Y * 5f);
+            var c1 = new PointF(ini.X + 2f / 3f * (ctrl.X - ini.X), ini.Y + 2f / 3f * (ctrl.Y - ini.Y));
+            var c2 = new PointF(fin.X + 2f / 3f * (ctrl.X - fin.X), fin.Y + 2f / 3f * (ctrl.Y - fin.Y));
+
+            using (var pen = new Pen(tinta, 1.4f))
+                g.DrawBezier(pen, ini, c1, c2, fin);
+            MiniPunta(g, punta, u1, tinta);
+        }
+
+        // Lazo sobre el nodo; la punta termina justo en el borde
+        private static void MiniLazo(Graphics g, PointF n, float r, Color tinta)
+        {
+            const float lr = 5f;
+            float D = r + lr * 0.6f;
+            var C = new PointF(n.X, n.Y - D);
+
+            double cosF = (D * D + lr * lr - r * r) / (2.0 * D * lr);
+            double phi = Math.Acos(Math.Max(-1, Math.Min(1, cosF)));
+            double a0 = Math.PI / 2;   // de C hacia el nodo (abajo)
+
+            using (var pen = new Pen(tinta, 1.4f))
+                g.DrawArc(pen, C.X - lr, C.Y - lr, 2 * lr, 2 * lr,
+                          (float)((a0 + phi) * 180 / Math.PI), (float)(360 - 2 * phi * 180 / Math.PI));
+
+            double te = a0 - phi;
+            var punta = new PointF(C.X + lr * (float)Math.Cos(te), C.Y + lr * (float)Math.Sin(te));
+            MiniPunta(g, punta, new PointF(-(float)Math.Sin(te), (float)Math.Cos(te)), tinta);
+        }
+
+        private static void MiniPunta(Graphics g, PointF punta, PointF d, Color tinta)
+        {
+            var bas = new PointF(punta.X - d.X * 5.5f, punta.Y - d.Y * 5.5f);
+            var tri = new[]
+            {
+                punta,
+                new PointF(bas.X - d.Y * 2.8f, bas.Y + d.X * 2.8f),
+                new PointF(bas.X + d.Y * 2.8f, bas.Y - d.X * 2.8f)
+            };
+            using (var br = new SolidBrush(tinta))
+                g.FillPolygon(br, tri);
+        }
+
+        private static void Pildora(Graphics g, Font f, StringFormat centro, float x, float y, bool si)
+        {
+            const float w = 54, h = 24;
+            Color fondo = si ? Color.FromArgb(214, 245, 228) : Color.FromArgb(253, 226, 226);   // NUEVO: No en rojo
+            Color tinta = si ? Color.FromArgb(18, 140, 80) : Color.FromArgb(200, 50, 50);   // NUEVO: No en rojo
+
+            using (var path = Redondeado(new RectangleF(x, y, w, h), h / 2f))
+            using (var b = new SolidBrush(fondo))
+                g.FillPath(b, path);
+
+            float cy = y + h / 2f;
+            using (var pen = new Pen(tinta, 2f) { StartCap = LineCap.Round, EndCap = LineCap.Round, LineJoin = LineJoin.Round })
+            {
+                if (si)   // ✓
+                    g.DrawLines(pen, new[] { new PointF(x + 10, cy), new PointF(x + 14, cy + 4), new PointF(x + 21, cy - 4) });
+                else      // ✕
+                {
+                    g.DrawLine(pen, x + 11, cy - 4, x + 19, cy + 4);
+                    g.DrawLine(pen, x + 19, cy - 4, x + 11, cy + 4);
+                }
+            }
+            using (var b = new SolidBrush(tinta))
+                g.DrawString(si ? "Sí" : "No", f, b, new RectangleF(x + 22, y, w - 22, h), centro);
         }
     }
 }

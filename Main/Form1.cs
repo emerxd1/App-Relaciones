@@ -32,6 +32,13 @@ namespace Main
         private readonly Dictionary<string, Sunny.UI.UICheckBox> checks = new();
         private readonly Dictionary<string, Sunny.UI.UITextBox> cajas = new();
 
+        // soon y arrastre
+        private double zoomDigrafo = 1.0;
+        private Control panelDigrafoRef;
+        private Button btnZoomPct;
+        private bool arrastrando;
+        private Point arrastreIni, scrollIni;
+
         public Form1()
         {
             InitializeComponent();
@@ -55,6 +62,13 @@ namespace Main
             uiListBox1.Font = new Font("Consolas", 12);
 
             EnlazarEnter(txtElementos); // enter para agregar elementos
+
+            // NUEVO: al cambiar el tamaño de la ventana, la matriz y el dígrafo se reajustan
+            this.Resize += (s, ev) =>
+            {
+                if (relaciones.Count > 0 && WindowState != FormWindowState.Minimized)
+                    GenerarSalidas();
+            };
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -642,19 +656,111 @@ namespace Main
             if (vieja != null) vieja.Dispose();
         }
 
+       
+        private static Size AreaUtil(PictureBox pb)
+        {
+            Size s = pb.Parent.Size;
+            return new Size(Math.Max(s.Width - SystemInformation.VerticalScrollBarWidth - 4, 200),
+                            Math.Max(s.Height - SystemInformation.HorizontalScrollBarHeight - 4, 150));
+        }
+
+        
+        private void PrepararZoom(Control pDigrafo, PictureBox pb)
+        {
+            if (panelDigrafoRef != null) return;
+            panelDigrafoRef = pDigrafo;
+            var sp = (Panel)pb.Parent;
+
+            Button Crear(string txt, int x, int ancho, EventHandler clic)
+            {
+                var b = new Button();
+                b.Text = txt;
+                b.Size = new Size(ancho, 26);
+                b.Location = new Point(pDigrafo.Width - x, 8);
+                b.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+                b.FlatStyle = FlatStyle.Flat;
+                b.BackColor = Color.White;
+                b.Click += clic;
+                pDigrafo.Controls.Add(b);
+                b.BringToFront();
+                return b;
+            }
+
+            Crear("−", 134, 30, (s, ev) => CambiarZoom(zoomDigrafo / 1.25));
+            btnZoomPct = Crear("100%", 100, 60, (s, ev) => CambiarZoom(1.0));
+            Crear("+", 36, 30, (s, ev) => CambiarZoom(zoomDigrafo * 1.25));
+
+            MouseEventHandler rueda = (s, ev) =>
+            {
+                if (Control.ModifierKeys != Keys.Control) return;
+                if (ev is HandledMouseEventArgs h) h.Handled = true;
+                CambiarZoom(ev.Delta > 0 ? zoomDigrafo * 1.15 : zoomDigrafo / 1.15);
+            };
+            sp.MouseWheel += rueda;
+            pb.MouseWheel += rueda;
+
+            pb.MouseDown += (s, ev) =>
+            {
+                if (ev.Button != MouseButtons.Left) return;
+                arrastrando = true;
+                arrastreIni = Cursor.Position;
+                scrollIni = new Point(-sp.AutoScrollPosition.X, -sp.AutoScrollPosition.Y);
+                pb.Cursor = Cursors.Hand;
+            };
+            pb.MouseMove += (s, ev) =>
+            {
+                if (!arrastrando) return;
+                int dx = Cursor.Position.X - arrastreIni.X;
+                int dy = Cursor.Position.Y - arrastreIni.Y;
+                sp.AutoScrollPosition = new Point(Math.Max(0, scrollIni.X - dx), Math.Max(0, scrollIni.Y - dy));
+            };
+            pb.MouseUp += (s, ev) => { arrastrando = false; pb.Cursor = Cursors.Default; };
+        }
+
+        
+        private void CambiarZoom(double nuevo)
+        {
+            nuevo = Math.Max(0.5, Math.Min(4.0, nuevo));
+            if (Math.Abs(nuevo - zoomDigrafo) < 0.001) return;
+            zoomDigrafo = nuevo;
+            if (btnZoomPct != null) btnZoomPct.Text = (int)Math.Round(nuevo * 100) + "%";
+            if (relaciones.Count == 0 || panelDigrafoRef == null) return;
+
+            PictureBox pb = ImagenEn(panelDigrafoRef);
+            var sp = (Panel)pb.Parent;
+            double fx = (-sp.AutoScrollPosition.X + sp.ClientSize.Width / 2.0) / Math.Max(pb.Width, 1);
+            double fy = (-sp.AutoScrollPosition.Y + sp.ClientSize.Height / 2.0) / Math.Max(pb.Height, 1);
+
+            DibujarDigrafo(panelDigrafoRef);
+
+            sp.AutoScrollPosition = new Point(
+                Math.Max(0, (int)(fx * pb.Width - sp.ClientSize.Width / 2.0)),
+                Math.Max(0, (int)(fy * pb.Height - sp.ClientSize.Height / 2.0)));
+        }
+
         private void DibujarMatrizYPropiedades(Control pMatriz, Control pProp)
         {
-            MostrarImagen(ImagenEn(pMatriz), Grafica.Matriz(ConstruirGrupos(), relaciones));
-            TextoEn(pProp).Text = Multi.Propiedades(ConstruirRelaciones());
+            
+            PictureBox pbM = ImagenEn(pMatriz);
+            Size aM = AreaUtil(pbM);
+            MostrarImagen(pbM, Grafica.Matriz(ConstruirGrupos(), relaciones, aM.Width, aM.Height));
+            // MostrarImagen(ImagenEn(pMatriz), Grafica.Matriz(ConstruirGrupos(), relaciones));
+
+            PictureBox pbP = ImagenEn(pProp);
+            MostrarImagen(pbP, Grafica.Propiedades(ConstruirRelaciones(), AreaUtil(pbP).Width));
+            // TextoEn(pProp).Text = Multi.Propiedades(ConstruirRelaciones());
         }
 
         private void DibujarDigrafo(Control pDigrafo)
         {
             PictureBox pb = ImagenEn(pDigrafo);
-            Size vp = pb.Parent.ClientSize;
-            int w = Math.Max(vp.Width - SystemInformation.VerticalScrollBarWidth - 2, 300);
-            int h = Math.Max(vp.Height - 40, 280);
-            MostrarImagen(pb, Grafica.Digrafo(ConstruirGrupos(), relaciones, w, h));
+            PrepararZoom(pDigrafo, pb);
+            Size a = AreaUtil(pb);
+            // Size vp = pb.Parent.ClientSize;
+            // int w = Math.Max(vp.Width - SystemInformation.VerticalScrollBarWidth - 2, 300);
+            // int h = Math.Max(vp.Height - 40, 280);
+            // MostrarImagen(pb, Grafica.Digrafo(ConstruirGrupos(), relaciones, w, h));
+            MostrarImagen(pb, Grafica.Digrafo(ConstruirGrupos(), relaciones, a.Width, a.Height, (float)zoomDigrafo));
         }
 
         // Genera las tres salidas de una vez
